@@ -87,3 +87,37 @@ export interface AuthResponse {
   token: string
   user: User
 }
+
+// Budget Types
+export interface BudgetItem {
+  id: number
+  categoryId: number
+  categoryName: string
+  categoryIcon?: string
+  categoryColor?: string
+  limit: number
+  spent: number
+  month: string // Format: "YYYY-MM"
+  createdAt?: string
+  updatedAt?: string
+}
+
+export interface BudgetSummary {
+  totalBudget: number
+  totalSpent: number
+  remaining: number
+  percentageUsed: number
+  categoriesCount: number
+  overBudgetCount: number
+}
+
+export interface CreateBudgetDto {
+  categoryId: number
+  limit: number
+  month: string // Format: "YYYY-MM"
+}
+
+export interface UpdateBudgetDto {
+  id: number
+  limit: number
+}
