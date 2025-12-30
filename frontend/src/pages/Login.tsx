@@ -1,67 +1,100 @@
+import { Login as LoginIcon, Visibility, VisibilityOff } from '@mui/icons-material'
+import { Box, Button, IconButton, InputAdornment, Typography } from '@mui/material'
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { FormAlert, FormTextField } from '../components/forms'
+import AuthLayout from '../components/layout/AuthLayout'
 import { useAuth } from '../hooks/useAuth'
 
 const Login = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
   const { login } = useAuth()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
+    setLoading(true)
 
     try {
       await login({ email, password })
       navigate('/dashboard')
     } catch (err) {
-      setError('Falha no login. Verifique suas credenciais.')
+      setError('Login failed. Please check your credentials.')
+    } finally {
+      setLoading(false)
     }
   }
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword)
+  }
+
   return (
-    <div style={{ padding: '2rem', maxWidth: '400px', margin: '0 auto' }}>
-      <h1>Login</h1>
-      <form onSubmit={handleSubmit}>
-        {error && <div style={{ color: 'red', marginBottom: '1rem' }}>{error}</div>}
+    <AuthLayout title="Welcome Back" subtitle="Sign in to your account">
+      <Box component="form" onSubmit={handleSubmit} noValidate>
+        <FormAlert message={error} show={!!error} />
 
-        <div style={{ marginBottom: '1rem' }}>
-          <label>
-            Email:
-            <input
-              type="email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              required
-              style={{ display: 'block', width: '100%', padding: '0.5rem' }}
-            />
-          </label>
-        </div>
+        <FormTextField
+          name="email"
+          label="Email Address"
+          type="email"
+          value={email}
+          onChange={e => setEmail(e.target.value)}
+          required
+          autoComplete="email"
+          autoFocus
+        />
 
-        <div style={{ marginBottom: '1rem' }}>
-          <label>
-            Senha:
-            <input
-              type="password"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              required
-              style={{ display: 'block', width: '100%', padding: '0.5rem' }}
-            />
-          </label>
-        </div>
+        <FormTextField
+          name="password"
+          label="Password"
+          type={showPassword ? 'text' : 'password'}
+          value={password}
+          onChange={e => setPassword(e.target.value)}
+          required
+          autoComplete="current-password"
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton aria-label="toggle password visibility" onClick={togglePasswordVisibility} edge="end">
+                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
+        />
 
-        <button type="submit" style={{ padding: '0.5rem 1rem' }}>
-          Entrar
-        </button>
-      </form>
+        <Button type="submit" fullWidth variant="contained" size="large" disabled={loading} startIcon={<LoginIcon />} sx={{ mt: 3, mb: 2, py: 1.5 }}>
+          {loading ? 'Signing in...' : 'Sign In'}
+        </Button>
 
-      <p style={{ marginTop: '1rem' }}>
-        Não tem uma conta? <Link to="/register">Cadastre-se</Link>
-      </p>
-    </div>
+        <Box sx={{ textAlign: 'center', mt: 2 }}>
+          <Typography variant="body2" color="text.secondary">
+            Don&apos;t have an account?{' '}
+            <Typography
+              component={Link}
+              to="/register"
+              variant="body2"
+              sx={{
+                color: 'primary.main',
+                textDecoration: 'none',
+                fontWeight: 600,
+                '&:hover': {
+                  textDecoration: 'underline',
+                },
+              }}
+            >
+              Sign Up
+            </Typography>
+          </Typography>
+        </Box>
+      </Box>
+    </AuthLayout>
   )
 }
 

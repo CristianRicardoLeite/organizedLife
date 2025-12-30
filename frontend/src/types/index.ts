@@ -3,10 +3,16 @@ export enum TransactionType {
   Expense = 'Expense',
 }
 
+export enum CategoryType {
+  INCOME = 'income',
+  EXPENSE = 'expense',
+}
+
 export interface User {
   id: number
   name: string
   email: string
+  createdAt?: string
 }
 
 export interface Category {
@@ -14,7 +20,8 @@ export interface Category {
   name: string
   icon: string
   color: string
-  type: TransactionType
+  type: CategoryType
+  userId?: number
 }
 
 export interface Transaction {
@@ -27,6 +34,14 @@ export interface Transaction {
   categoryName?: string
   categoryIcon?: string
   categoryColor?: string
+  createdAt?: string
+}
+
+export interface TransactionSummary {
+  totalIncome: number
+  totalExpense: number
+  balance: number
+  transactionCount: number
 }
 
 export interface CreateTransactionDto {
@@ -35,6 +50,21 @@ export interface CreateTransactionDto {
   type: TransactionType
   date: string
   categoryId?: number
+}
+
+export interface UpdateTransactionDto extends CreateTransactionDto {
+  id: number
+}
+
+export interface CreateCategoryDto {
+  name: string
+  color: string
+  icon: string
+  type: CategoryType
+}
+
+export interface UpdateCategoryDto extends CreateCategoryDto {
+  id: number
 }
 
 export interface LoginDto {
@@ -46,6 +76,11 @@ export interface RegisterDto {
   name: string
   email: string
   password: string
+}
+
+export interface AuthResponse {
+  user: User
+  token: string
 }
 
 export interface AuthResponse {
