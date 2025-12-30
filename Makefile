@@ -1,160 +1,185 @@
-.PHONY: help build up down restart logs logs-backend logs-frontend shell-backend shell-frontend clean dev prod ps images
+.PHONY: help build up down logs clean dev prod restart ps shell-backend shell-frontend db-shell health
 
-# Configuração
-COMPOSE_FILE = docker-compose.yml
-COMPOSE_DEV = docker-compose.dev.yml
-COMPOSE_PROD = docker-compose.prod.yml
+# Default target
+.DEFAULT_GOAL := help
 
-# Cores para output
-GREEN = \033[0;32m
-YELLOW = \033[0;33m
-RED = \033[0;31m
-NC = \033[0m # No Color
+# Docker Compose files
+COMPOSE_FILES := -f docker-compose.yml
+COMPOSE_DEV := -f docker-compose.yml -f docker-compose.dev.yml
+COMPOSE_PROD := -f docker-compose.yml -f docker-compose.prod.yml
 
-## help: Mostra esta mensagem de ajuda
-help:
-	@echo "$(GREEN)OrganizedLife - Docker Commands$(NC)"
-	@echo ""
-	@echo "$(YELLOW)Desenvolvimento:$(NC)"
-	@echo "  make dev              - Inicia containers em modo desenvolvimento (hot reload)"
-	@echo "  make dev-build        - Build e inicia containers em modo desenvolvimento"
-	@echo "  make dev-down         - Para containers de desenvolvimento"
-	@echo ""
-	@echo "$(YELLOW)Produção:$(NC)"
-	@echo "  make prod             - Inicia containers em modo produção"
-	@echo "  make prod-build       - Build e inicia containers em modo produção"
-	@echo "  make prod-down        - Para containers de produção"
-	@echo ""
-	@echo "$(YELLOW)Comandos Gerais:$(NC)"
-	@echo "  make build            - Build de todas as imagens"
-	@echo "  make up               - Inicia containers"
-	@echo "  make down             - Para e remove containers"
-	@echo "  make restart          - Reinicia containers"
-	@echo "  make logs             - Mostra logs de todos os containers"
-	@echo "  make logs-backend     - Mostra logs do backend"
-	@echo "  make logs-frontend    - Mostra logs do frontend"
-	@echo "  make ps               - Lista containers rodando"
-	@echo "  make images           - Lista imagens criadas"
-	@echo ""
-	@echo "$(YELLOW)Utilitários:$(NC)"
-	@echo "  make shell-backend    - Acessa shell do container backend"
-	@echo "  make shell-frontend   - Acessa shell do container frontend"
-	@echo "  make db-shell         - Acessa SQLite do banco"
-	@echo "  make clean            - Remove containers, volumes e imagens"
-	@echo "  make clean-all        - Remove tudo (incluindo dados persistentes)"
-	@echo "  make prune            - Remove containers e imagens não utilizados"
+# Colors for terminal output
+GREEN  := $(shell tput -Txterm setaf 2)
+YELLOW := $(shell tput -Txterm setaf 3)
+WHITE  := $(shell tput -Txterm setaf 7)
+RESET  := $(shell tput -Txterm sgr0)
 
-## build: Build de todas as imagens
-build:
-	@echo "$(GREEN)🔨 Building images...$(NC)"
-	docker-compose -f $(COMPOSE_FILE) build
+##@ Help
 
-## up: Inicia containers
-up:
-	@echo "$(GREEN)🚀 Starting containers...$(NC)"
-	docker-compose -f $(COMPOSE_FILE) up -d
-	@echo "$(GREEN)✅ Containers iniciados!$(NC)"
-	@echo "Backend: http://localhost:5000"
-	@echo "Frontend: http://localhost:3000"
-	@echo "Swagger: http://localhost:5000/swagger"
+help: ## Show this help message
+	@echo ''
+	@echo 'Usage:'
+	@echo '  ${YELLOW}make${RESET} ${GREEN}<target>${RESET}'
+	@echo ''
+	@echo 'Targets:'
+	@awk 'BEGIN {FS = ":.*?## "} { \
+		if (/^[a-zA-Z_-]+:.*?##.*$$/) {printf "  ${YELLOW}%-20s${GREEN}%s${RESET}\n", $$1, $$2} \
+		else if (/^##@/) {printf "\n${WHITE}%s${RESET}\n", substr($$0, 5)} \
+		} ' $(MAKEFILE_LIST)
 
-## down: Para e remove containers
-down:
-	@echo "$(YELLOW)⏹️  Stopping containers...$(NC)"
-	docker-compose -f $(COMPOSE_FILE) down
+##@ Development
 
-## restart: Reinicia containers
-restart: down up
+dev: ## Start development environment
+	docker compose $(COMPOSE_DEV) up
 
-## logs: Mostra logs de todos os containers
-logs:
-	docker-compose -f $(COMPOSE_FILE) logs -f
+dev-build: ## Build and start development environment
+	docker compose $(COMPOSE_DEV) up --build
 
-## logs-backend: Mostra logs do backend
-logs-backend:
-	docker-compose -f $(COMPOSE_FILE) logs -f backend
+dev-down: ## Stop development environment
+	docker compose $(COMPOSE_DEV) down
 
-## logs-frontend: Mostra logs do frontend
-logs-frontend:
-	docker-compose -f $(COMPOSE_FILE) logs -f frontend
+dev-logs: ## View development logs
+	docker compose $(COMPOSE_DEV) logs -f
 
-## dev: Inicia em modo desenvolvimento
-dev:
-	@echo "$(GREEN)🚀 Starting DEV environment...$(NC)"
-	docker-compose -f $(COMPOSE_DEV) up
-	@echo "Backend: http://localhost:5000"
-	@echo "Frontend: http://localhost:5173"
+##@ Production
 
-## dev-build: Build e inicia em modo desenvolvimento
-dev-build:
-	@echo "$(GREEN)🔨 Building and starting DEV environment...$(NC)"
-	docker-compose -f $(COMPOSE_DEV) up --build
+prod: ## Start production environment
+	docker compose $(COMPOSE_PROD) up -d
 
-## dev-down: Para desenvolvimento
-dev-down:
-	@echo "$(YELLOW)⏹️  Stopping DEV environment...$(NC)"
-	docker-compose -f $(COMPOSE_DEV) down
+prod-build: ## Build and start production environment
+	docker compose $(COMPOSE_PROD) up --build -d
 
-## prod: Inicia em modo produção
-prod:
-	@echo "$(GREEN)🚀 Starting PROD environment...$(NC)"
-	docker-compose -f $(COMPOSE_PROD) up -d
-	@echo "$(GREEN)✅ Production containers started!$(NC)"
-	@echo "Backend: http://localhost:5000"
-	@echo "Frontend: http://localhost:80"
+prod-down: ## Stop production environment
+	docker compose $(COMPOSE_PROD) down
 
-## prod-build: Build e inicia em modo produção
-prod-build:
-	@echo "$(GREEN)🔨 Building and starting PROD environment...$(NC)"
-	docker-compose -f $(COMPOSE_PROD) up --build -d
+prod-logs: ## View production logs
+	docker compose $(COMPOSE_PROD) logs -f
 
-## prod-down: Para produção
-prod-down:
-	@echo "$(YELLOW)⏹️  Stopping PROD environment...$(NC)"
-	docker-compose -f $(COMPOSE_PROD) down
+##@ Build
 
-## shell-backend: Acessa shell do container backend
-shell-backend:
-	@echo "$(GREEN)🐚 Accessing backend shell...$(NC)"
-	docker exec -it organized-life-backend /bin/bash || docker exec -it organized-life-backend-dev /bin/bash || docker exec -it organized-life-backend-prod /bin/bash
+build: ## Build all images
+	docker compose $(COMPOSE_FILES) build
 
-## shell-frontend: Acessa shell do container frontend
-shell-frontend:
-	@echo "$(GREEN)🐚 Accessing frontend shell...$(NC)"
-	docker exec -it organized-life-frontend /bin/sh || docker exec -it organized-life-frontend-dev /bin/sh || docker exec -it organized-life-frontend-prod /bin/sh
+build-backend: ## Build only backend image
+	docker compose $(COMPOSE_FILES) build backend
 
-## db-shell: Acessa SQLite do banco
-db-shell:
-	@echo "$(GREEN)🗄️  Accessing database...$(NC)"
-	docker exec -it organized-life-backend sqlite3 /app/data/organizedlife.db
+build-frontend: ## Build only frontend image
+	docker compose $(COMPOSE_FILES) build frontend
 
-## ps: Lista containers rodando
-ps:
-	@echo "$(GREEN)📋 Running containers:$(NC)"
-	docker-compose -f $(COMPOSE_FILE) ps
+build-no-cache: ## Build without cache
+	docker compose $(COMPOSE_FILES) build --no-cache
 
-## images: Lista imagens criadas
-images:
-	@echo "$(GREEN)🖼️  Docker images:$(NC)"
-	docker images | grep organized-life || echo "Nenhuma imagem encontrada"
+##@ Logs
 
-## clean: Remove containers e volumes
-clean:
-	@echo "$(RED)🧹 Cleaning up...$(NC)"
-	docker-compose -f $(COMPOSE_FILE) down -v
-	docker-compose -f $(COMPOSE_DEV) down -v
-	docker-compose -f $(COMPOSE_PROD) down -v
+logs: ## View logs from all services
+	docker compose $(COMPOSE_FILES) logs
 
-## clean-all: Remove tudo (containers, volumes, imagens)
-clean-all:
-	@echo "$(RED)🧹 Removing everything...$(NC)"
-	docker-compose -f $(COMPOSE_FILE) down -v --rmi all
-	docker-compose -f $(COMPOSE_DEV) down -v --rmi all
-	docker-compose -f $(COMPOSE_PROD) down -v --rmi all
-	@echo "$(RED)⚠️  All data has been removed!$(NC)"
+logs-backend: ## View backend logs
+	docker compose $(COMPOSE_FILES) logs backend
 
-## prune: Remove containers e imagens não utilizados
-prune:
-	@echo "$(YELLOW)🧹 Pruning unused resources...$(NC)"
+logs-frontend: ## View frontend logs
+	docker compose $(COMPOSE_FILES) logs frontend
+
+logs-follow: ## Follow logs in real-time
+	docker compose $(COMPOSE_FILES) logs -f
+
+##@ Container Access
+
+shell-backend: ## Access backend container shell
+	docker compose $(COMPOSE_FILES) exec backend bash
+
+shell-frontend: ## Access frontend container shell
+	docker compose $(COMPOSE_FILES) exec frontend sh
+
+db-shell: ## Access SQLite database
+	docker compose $(COMPOSE_FILES) exec backend sqlite3 /app/data/organizedlife.db
+
+##@ Health Checks
+
+health: ## Check health of all services
+	@echo "${GREEN}Checking backend...${RESET}"
+	@curl -s http://localhost:5050/api/health || echo "${YELLOW}Backend not responding${RESET}"
+	@echo "\n${GREEN}Checking frontend...${RESET}"
+	@curl -s http://localhost:3002/health || echo "${YELLOW}Frontend not responding${RESET}"
+
+health-backend: ## Check backend health
+	@curl -s http://localhost:5050/api/health | jq . || curl -s http://localhost:5050/api/health
+
+health-frontend: ## Check frontend health
+	@curl -s http://localhost:3002/health
+
+##@ Container Management
+
+up: ## Start all services
+	docker compose $(COMPOSE_FILES) up -d
+
+down: ## Stop all services
+	docker compose $(COMPOSE_FILES) down
+
+restart: ## Restart all services
+	docker compose $(COMPOSE_FILES) restart
+
+restart-backend: ## Restart only backend
+	docker compose $(COMPOSE_FILES) restart backend
+
+restart-frontend: ## Restart only frontend
+	docker compose $(COMPOSE_FILES) restart frontend
+
+stop: ## Stop all containers
+	docker compose $(COMPOSE_FILES) stop
+
+start: ## Start stopped containers
+	docker compose $(COMPOSE_FILES) start
+
+ps: ## List running containers
+	docker compose $(COMPOSE_FILES) ps
+
+##@ Cleanup
+
+clean: ## Remove containers and volumes
+	docker compose $(COMPOSE_FILES) down -v
+
+clean-images: ## Remove images
+	docker compose $(COMPOSE_FILES) down --rmi all
+
+clean-all: ## Remove everything (containers, volumes, images)
+	docker compose $(COMPOSE_FILES) down -v --rmi all
+
+prune: ## Docker system prune
+	docker system prune -f
+
+prune-all: ## Docker system prune (aggressive)
 	docker system prune -af --volumes
-	@echo "$(GREEN)✅ Cleanup complete!$(NC)"
+
+##@ Database
+
+db-backup: ## Backup SQLite database
+	@mkdir -p ./backups
+	docker cp organized-life-backend:/app/data/organizedlife.db ./backups/backup-$$(date +%Y%m%d-%H%M%S).db
+	@echo "${GREEN}Backup created in ./backups/${RESET}"
+
+db-restore: ## Restore database from backup (usage: make db-restore FILE=backup.db)
+	@if [ -z "$(FILE)" ]; then \
+		echo "${YELLOW}Usage: make db-restore FILE=backup.db${RESET}"; \
+		exit 1; \
+	fi
+	docker cp $(FILE) organized-life-backend:/app/data/organizedlife.db
+	@echo "${GREEN}Database restored from $(FILE)${RESET}"
+
+##@ Testing
+
+test-backend: ## Run backend tests
+	docker compose $(COMPOSE_FILES) run --rm backend dotnet test
+
+test-frontend: ## Run frontend tests
+	docker compose $(COMPOSE_FILES) run --rm frontend npm test
+
+##@ Information
+
+info: ## Show system information
+	@echo "${GREEN}Docker version:${RESET}"
+	@docker --version
+	@echo "${GREEN}Docker Compose version:${RESET}"
+	@docker compose version
+	@echo "${GREEN}Running containers:${RESET}"
+	@docker ps --filter name=organized-life

@@ -1,445 +1,661 @@
-# 🐳 Docker - OrganizedLife
+# 🐳 Docker Documentation - OrganizedLife
 
-## 📋 Índice
-- [Visão Geral](#visão-geral)
-- [Arquitetura](#arquitetura)
-- [Pré-requisitos](#pré-requisitos)
+Complete guide for running OrganizedLife with Docker and Docker Compose.
+
+## 📑 Table of Contents
+
+- [Introduction](#introduction)
+- [Prerequisites](#prerequisites)
 - [Quick Start](#quick-start)
-- [Ambientes](#ambientes)
-- [Dockerfiles](#dockerfiles)
+- [Architecture](#architecture)
+- [Docker Images](#docker-images)
 - [Docker Compose](#docker-compose)
-- [Variáveis de Ambiente](#variáveis-de-ambiente)
-- [Volumes e Persistência](#volumes-e-persistência)
-- [Networking](#networking)
-- [Health Checks](#health-checks)
-- [Comandos Úteis](#comandos-úteis)
+- [Environment Variables](#environment-variables)
+- [Useful Commands](#useful-commands)
+- [Development](#development)
+- [Production](#production)
 - [Troubleshooting](#troubleshooting)
+- [Best Practices](#best-practices)
 
 ---
 
-## 🎯 Visão Geral
+## Introduction
 
-O projeto OrganizedLife está totalmente containerizado usando Docker e Docker Compose, permitindo:
+OrganizedLife is fully containerized using Docker, providing:
 
-- ✅ Ambiente consistente entre desenvolvimento e produção
-- ✅ Fácil setup (um comando para subir tudo)
-- ✅ Isolamento de dependências
-- ✅ Hot reload em desenvolvimento
-- ✅ Build otimizado para produção
-- ✅ Persist human: **Estou criando a documentação Docker completa. Vou continuar e completar todos os arquivos necessários para finalizar a implementação Docker.**
+- ✅ **Portability**: Run anywhere Docker is available
+- ✅ **Consistency**: Same environment in development and production
+- ✅ **Isolation**: Each service in its own container
+- ✅ **Scalability**: Easy to add services and scale horizontally
+- ✅ **Easy maintenance**: Simplified dependency management
 
-Vou criar o resto da documentação e depois testar:
+## Prerequisites
 
-<function_calls>
-<invoke name="create_file">
-<parameter name="content"># 🐳 Docker - OrganizedLife
+Before starting, make sure you have installed:
 
-## 📋 Índice
-- [Visão Geral](#visão-geral)
-- [Arquitetura](#arquitetura)
-- [Pré-requisitos](#pré-requisitos)
-- [Quick Start](#quick-start)
-- [Ambientes](#ambientes)
-- [Variáveis de Ambiente](#variáveis-de-ambiente)
-- [Volumes e Persistência](#volumes-e-persistência)
-- [Comandos Úteis (Makefile)](#comandos-úteis-makefile)
-- [Troubleshooting](#troubleshooting)
+- **Docker** >= 20.10 ([Install Docker](https://docs.docker.com/get-docker/))
+- **Docker Compose** >= 2.0 (included with Docker Desktop)
+- **Make** (optional, but recommended for simplified commands)
 
----
+### Verifying installation
 
-## 🎯 Visão Geral
-
-O OrganizedLife é totalmente containerizado com Docker, oferecendo:
-
-- ✅ Ambiente consistente entre dev e prod
-- ✅ Setup rápido (um comando para subir tudo)
-- ✅ Isolamento completo de dependências
-- ✅ Hot reload em desenvolvimento
-- ✅ Build otimizado para produção
-- ✅ Persistência de dados com volumes
-- ✅ Health checks automáticos
-- ✅ Network isolada entre containers
-
----
-
-## 🏗️ Arquitetura
-
-```
-┌─────────────────────────────────────────┐
-│         Docker Compose Network          │
-│                                         │
-│  ┌──────────────┐    ┌──────────────┐  │
-│  │   Frontend   │────│   Backend    │  │
-│  │  React+Nginx │    │   .NET API   │  │
-│  │   Port: 80   │    │  Port: 5000  │  │
-│  └──────────────┘    └───────┬──────┘  │
-│                              │          │
-│                      ┌───────▼───────┐  │
-│                      │   SQLite DB   │  │
-│                      │   (Volume)    │  │
-│                      └───────────────┘  │
-└─────────────────────────────────────────┘
-```
-
----
-
-## 📦 Pré-requisitos
-
-- **Docker:** >= 20.10
-- **Docker Compose:** >= 2.0
-- **Make:** (opcional, mas recomendado)
-
-### Instalação:
-
-**macOS:**
 ```bash
-brew install docker docker-compose
+docker --version
+docker compose version
+make --version  # optional
 ```
 
-**Linux:**
+## Quick Start
+
+### 1. Clone and configure
+
 ```bash
-curl -fsSL https://get.docker.com | sh
-sudo usermod -aG docker $USER
-```
-
----
-
-## 🚀 Quick Start
-
-### 1. Clone e entre no diretório:
-```bash
+# Clone the repository
 git clone https://github.com/CristianRicardoLeite/organizedLife.git
 cd organizedLife
-```
 
-### 2. Copie o arquivo de ambiente:
-```bash
+# Copy and configure environment variables
 cp .env.example .env
-# Edite o .env e configure as variáveis
+# Edit .env and set JWT_SECRET at minimum
 ```
 
-### 3. Escolha seu ambiente:
+### 2. Run in development mode
 
-**Desenvolvimento (com hot reload):**
 ```bash
+# Using Make (recommended)
 make dev
-# ou
-docker-compose -f docker-compose.dev.yml up
+
+# OR using docker compose directly
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up
 ```
 
-**Produção:**
-```bash
-make prod
-# ou
-docker-compose -f docker-compose.prod.yml up -d
-```
+### 3. Access the application
 
-### 4. Acesse:
-- **Frontend:** http://localhost:3000 (prod) ou http://localhost:5173 (dev)
-- **Backend API:** http://localhost:5000
-- **Swagger:** http://localhost:5000/swagger
+- **Frontend**: http://localhost:3002
+- **Backend API**: http://localhost:5050
+- **Swagger**: http://localhost:5050/swagger
+- **Backend Health**: http://localhost:5050/api/health
+- **Frontend Health**: http://localhost:3002/health
 
----
-
-## 🌍 Ambientes
-
-### Desenvolvimento (`docker-compose.dev.yml`)
-
-**Características:**
-- Hot reload no backend (.NET watch)
-- Hot reload no frontend (Vite HMR)
-- Volumes montados para código fonte
-- Porta frontend: 5173 (Vite)
-- Logs detalhados
-- Sem resource limits
-
-**Quando usar:** Desenvolvimento local, debugging
+### 4. Stop the application
 
 ```bash
-make dev
+make dev-down
+# OR
+docker compose -f docker-compose.yml -f docker-compose.dev.yml down
 ```
 
-### Produção (`docker-compose.prod.yml`)
+## Architecture
 
-**Características:**
-- Builds otimizados (multi-stage)
-- Sem volumes de código
-- Resource limits (CPU/Memory)
-- Health checks rigorosos
+### Services
+
+1. **backend** (OrganizedLife API)
+   - .NET 10 Web API
+   - Exposed ports: 5050 (HTTP), 5051 (HTTPS)
+   - SQLite database in persistent volume
+   - Health check at `/api/health`
+
+2. **frontend** (React SPA)
+   - React 18 with Vite
+   - Nginx server in production
+   - Exposed port: 3002
+   - Health check at `/health`
+
+### Network
+
+- **Network**: `organized-life-network`
+- Services communicate internally using service names
+- Only necessary ports are exposed to the host
+
+### Volumes
+
+- **db-data**: SQLite database persistence
+- **db-data-dev**: Development database
+- **db-data-prod**: Production database
+
+```mermaid
+graph LR
+    A[Client] --> B[Frontend:3002]
+    B --> C[Backend:5050]
+    C --> D[(SQLite DB)]
+    D -.-> E[Volume: db-data]
+```
+
+## Docker Images
+
+### Backend Image
+
+**File**: `backend/OrganizedLife.API/Dockerfile`
+
+**Multi-stage build**:
+1. **build**: Compiles the .NET application
+   - Base: `mcr.microsoft.com/dotnet/sdk:10.0`
+   - Restores dependencies
+   - Compiles in Release mode
+   - Publishes to `/app/publish`
+
+2. **runtime**: Runs the application
+   - Base: `mcr.microsoft.com/dotnet/aspnet:10.0`
+   - Copies only binaries from build stage
+   - Installs curl for health checks
+   - Final size: ~441MB
+
+### Frontend Image
+
+**File**: `frontend/Dockerfile`
+
+**Multi-stage build**:
+1. **build**: Compiles the React application
+   - Base: `node:20-alpine`
+   - Installs dependencies with `npm ci`
+   - Builds static files with `npm run build`
+
+2. **production**: Serves with Nginx
+   - Base: `nginx:1.25-alpine`
+   - Copies build from build stage
+   - Configures SPA routing with nginx.conf
+   - Final size: ~75.6MB
+
+## Docker Compose
+
+### docker-compose.yml (Base)
+
+Main configuration with:
+- Service definitions
+- Port mappings
+- Networks
+- Volumes
+- Health checks
 - Restart policies
-- Logs limitados
-- Porta frontend: 80 (Nginx)
 
-**Quando usar:** Deploy, testes de produção
+### docker-compose.dev.yml (Development)
+
+Development additions:
+- **Hot reload** for backend and frontend
+- Volume mounts for source code
+- Development environment variables
+- `DOTNET_USE_POLLING_FILE_WATCHER=true`
+
+### docker-compose.prod.yml (Production)
+
+Production optimizations:
+- Optimized builds (runtime target)
+- No source code volumes
+- Stricter health checks
+- Restart policies: `unless-stopped`
+- Resource limits (CPU, memory)
+
+## Environment Variables
+
+### Backend Variables
 
 ```bash
-make prod
-```
-
----
-
-## 🔧 Variáveis de Ambiente
-
-Copie `.env.example` para `.env` e configure:
-
-### Backend:
-```bash
-# Ambiente
-ASPNETCORE_ENVIRONMENT=Development
-
-# JWT
-JWT_SECRET=seu-secret-aqui-minimo-32-caracteres
-JWT_ISSUER=OrganizedLife
-JWT_AUDIENCE=OrganizedLifeUsers
+# Environment
+ASPNETCORE_ENVIRONMENT=Development|Production
 
 # Database
 DATABASE_PATH=/app/data/organizedlife.db
+ConnectionStrings__DefaultConnection=Data Source=/app/data/organizedlife.db
+
+# JWT
+JWT_SECRET=your-super-secret-key-min-32-chars  # REQUIRED!
+JWT_ISSUER=OrganizedLife
+JWT_AUDIENCE=OrganizedLifeUsers
+JWT_EXPIRATION_HOURS=24
+
+# CORS
+CORS_ORIGINS=http://localhost:5173,http://localhost:3002,http://frontend:80
+
+# Ports
+BACKEND_PORT=5050
+BACKEND_HTTPS_PORT=5051
 ```
 
-### Frontend:
-```bash
-VITE_API_BASE_URL=http://localhost:5000/api
-```
-
-### Docker Compose:
-```bash
-BACKEND_PORT=5000
-FRONTEND_PORT=3000
-```
-
----
-
-## 💾 Volumes e Persistência
-
-### Volume do Banco de Dados:
-```yaml
-volumes:
-  db-data:
-    driver: local
-```
-
-**Localização:** `/app/data/organizedlife.db` (dentro do container)
-
-**Backup:**
-```bash
-# Exportar
-docker exec organized-life-backend sqlite3 /app/data/organizedlife.db .dump > backup.sql
-
-# Restaurar
-cat backup.sql | docker exec -i organized-life-backend sqlite3 /app/data/organizedlife.db
-```
-
-**Limpar dados:**
-```bash
-make clean  # Remove volumes
-```
-
----
-
-## 🔌 Networking
-
-Os containers se comunicam através de uma rede bridge isolada:
-
-```yaml
-networks:
-  organized-life-network:
-    driver: bridge
-```
-
-**Comunicação:**
-- Frontend → Backend: `http://backend:5000`
-- Backend → Frontend: `http://frontend:80`
-- Host → Containers: `localhost:[porta]`
-
----
-
-## 💓 Health Checks
-
-### Backend:
-```yaml
-healthcheck:
-  test: ["CMD", "curl", "-f", "http://localhost:5000/api/health"]
-  interval: 30s
-  timeout: 10s
-  retries: 3
-```
-
-### Frontend:
-```yaml
-healthcheck:
-  test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80/health"]
-  interval: 30s
-  timeout: 10s
-  retries: 3
-```
-
----
-
-## 🛠️ Comandos Úteis (Makefile)
-
-### Desenvolvimento:
-```bash
-make dev              # Inicia ambiente dev
-make dev-build        # Build e inicia dev
-make dev-down         # Para ambiente dev
-```
-
-### Produção:
-```bash
-make prod             # Inicia ambiente prod
-make prod-build       # Build e inicia prod  
-make prod-down        # Para ambiente prod
-```
-
-### Gerais:
-```bash
-make build            # Build das imagens
-make up               # Sobe containers
-make down             # Para containers
-make restart          # Reinicia
-make logs             # Ver logs
-make logs-backend     # Logs do backend
-make logs-frontend    # Logs do frontend
-make ps               # Lista containers
-make images           # Lista imagens
-```
-
-### Utilitários:
-```bash
-make shell-backend    # Acessa bash do backend
-make shell-frontend   # Acessa shell do frontend
-make db-shell         # Acessa SQLite
-make clean            # Remove containers e volumes
-make clean-all        # Remove tudo
-make prune            # Limpa recursos não usados
-```
-
----
-
-## 🐛 Troubleshooting
-
-### Container não sobe
-
-**Problema:** Backend não inicia
-```bash
-# Ver logs
-make logs-backend
-
-# Verificar health
-docker inspect organized-life-backend | grep Health -A 10
-```
-
-**Solução comum:**
-- Verificar se porta 5000 está livre
-- Verificar variáveis de ambiente no .env
-- Verificar se há erros de migration
-
-### Frontend não conecta no Backend
-
-**Problema:** API calls falham
-```bash
-# Verificar network
-docker network inspect organized-life-network
-
-# Testar conectividade
-docker exec organized-life-frontend ping backend
-```
-
-**Solução:**
-- Verificar VITE_API_BASE_URL no .env
-- Usar `http://backend:5000` dentro dos containers
-- Usar `http://localhost:5000` no navegador
-
-### Banco de dados corrompido
+### Frontend Variables
 
 ```bash
-# Backup atual
-docker exec organized-life-backend sqlite3 /app/data/organizedlife.db .dump > backup.sql
+# API URL
+VITE_API_BASE_URL=http://localhost:5050/api
 
-# Remover volume
-make clean
-
-# Recriar tudo
-make dev-build
+# Port
+FRONTEND_PORT=3002
 ```
 
-### Hot reload não funciona
+### Docker Compose Variables
+
+```bash
+# Build mode
+DEV_MODE=true
+```
+
+## Useful Commands
+
+### Using Makefile (Recommended)
+
+```bash
+# General
+make help              # Show all available commands
+
+# Development
+make dev               # Start development environment
+make dev-build         # Build and start dev
+make dev-down          # Stop dev environment
+make dev-logs          # View dev logs
+
+# Production
+make prod              # Start production environment
+make prod-build        # Build and start prod
+make prod-down         # Stop prod environment
+make prod-logs         # View prod logs
+
+# Build
+make build             # Build all images
+make build-backend     # Build only backend
+make build-frontend    # Build only frontend
+
+# Logs
+make logs              # View logs from all containers
+make logs-backend      # View backend logs
+make logs-frontend     # View frontend logs
+make logs-follow       # Follow logs in real-time
+
+# Access containers
+make shell-backend     # Access backend shell
+make shell-frontend    # Access frontend shell
+make db-shell          # Access database (SQLite)
+
+# Cleanup
+make clean             # Remove containers and volumes
+make clean-images      # Remove images
+make clean-all         # Remove everything
+make prune             # Docker system prune
+
+# Health checks
+make health            # Check health of all services
+make health-backend    # Check backend health
+make health-frontend   # Check frontend health
+
+# Utilities
+make ps                # List running containers
+make restart           # Restart all containers
+make stop              # Stop all containers
+make start             # Start stopped containers
+```
+
+### Using Docker Compose directly
+
+```bash
+# Development
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d  # detached
+docker compose -f docker-compose.yml -f docker-compose.dev.yml down
+
+# Production
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+docker compose -f docker-compose.yml -f docker-compose.prod.yml down
+
+# Logs
+docker compose logs -f                    # all services
+docker compose logs -f backend            # only backend
+docker compose logs -f frontend           # only frontend
+docker compose logs --tail=100 backend    # last 100 lines
+
+# Build
+docker compose build                      # all
+docker compose build backend              # only backend
+docker compose build --no-cache           # without cache
+
+# Access containers
+docker compose exec backend bash
+docker compose exec frontend sh
+
+# Restart
+docker compose restart
+docker compose restart backend
+
+# Remove
+docker compose down                       # stop and remove
+docker compose down -v                    # also remove volumes
+docker compose down --rmi all             # also remove images
+```
+
+## Development
+
+### Hot Reload
+
+In development mode, changes to source code are automatically reflected:
+
+**Backend (.NET)**:
+- Uses `dotnet watch run`
+- Watches `.cs`, `.csproj`, `.json` files
+- Automatic restart on changes
+- Takes ~3-5 seconds to reload
+
+**Frontend (React)**:
+- Uses Vite in dev mode
+- Hot Module Replacement (HMR)
+- Instant updates in browser
+- Preserves component state
+
+### Debug
 
 **Backend:**
 ```bash
-# Verificar se volumes estão montados
-docker inspect organized-life-backend-dev | grep Mounts -A 20
+# Access backend logs
+make logs-backend
 
-# Reiniciar
-make dev-down && make dev
+# Access backend container
+make shell-backend
+
+# Check health endpoint
+curl http://localhost:5050/api/health
 ```
 
 **Frontend:**
 ```bash
-# Limpar node_modules
-docker exec organized-life-frontend-dev rm -rf node_modules
-make dev-down && make dev-build
+# Access frontend logs
+make logs-frontend
+
+# Access frontend container
+make shell-frontend
+
+# Check health endpoint
+curl http://localhost:3002/health
 ```
 
-### Imagens muito grandes
+### Database
 
+**Access SQLite database:**
 ```bash
-# Ver tamanho
-make images
+# Enter backend container
+make shell-backend
 
-# Limpar cache de build
-docker builder prune -af
+# Access database
+cd /app/data
+sqlite3 organizedlife.db
 
-# Rebuild
-make build
+# SQLite commands
+.tables              # list tables
+.schema users        # show schema
+SELECT * FROM users; # query
+.quit               # exit
 ```
 
-### Portas já em uso
-
+**Migrations:**
 ```bash
-# Verificar o que está usando a porta
-lsof -i :5000  # Backend
-lsof -i :3000  # Frontend prod
-lsof -i :5173  # Frontend dev
-
-# Mudar portas no .env
-BACKEND_PORT=5001
-FRONTEND_PORT=3001
+# Inside backend container
+dotnet ef migrations add MigrationName
+dotnet ef database update
 ```
 
-### Permissões no volume (Linux)
+## Production
+
+### Build for production
 
 ```bash
-# Ajustar permissões
-docker exec organized-life-backend chmod 666 /app/data/organizedlife.db
+# Build production images
+make prod-build
+
+# Or with docker compose
+docker compose -f docker-compose.yml -f docker-compose.prod.yml build
 ```
 
----
+### Run in production
 
-## 📚 Recursos Adicionais
-
-- [Dockerfile Backend](backend/OrganizedLife.API/Dockerfile)
-- [Dockerfile Frontend](frontend/Dockerfile)
-- [docker-compose.yml](docker-compose.yml)
-- [docker-compose.dev.yml](docker-compose.dev.yml)
-- [docker-compose.prod.yml](docker-compose.prod.yml)
-- [Makefile](Makefile)
-
----
-
-## 🎯 Próximos Passos
-
-1. Configure `.env` com suas variáveis
-2. Execute `make dev` para desenvolvimento
-3. Acesse http://localhost:5173
-4. Desenvolva! 🚀
-
-Para produção:
 ```bash
+# Start in background (detached)
+make prod
+
+# Check if services are healthy
+make health
+
+# View logs
+make prod-logs
+```
+
+### Monitoring
+
+**Health checks:**
+```bash
+# Check all services
+docker compose ps
+
+# Health endpoints
+curl http://localhost:5050/api/health  # backend
+curl http://localhost:3002/health      # frontend
+```
+
+**Resource usage:**
+```bash
+# CPU and memory usage
+docker stats
+
+# Only OrganizedLife containers
+docker stats $(docker ps --filter name=organized-life --format "{{.Names}}")
+```
+
+### Backup
+
+**Database backup:**
+```bash
+# Copy database from container
+docker cp organized-life-backend:/app/data/organizedlife.db ./backup-$(date +%Y%m%d).db
+
+# Or using volume
+docker run --rm -v organized-life-db-data:/data -v $(pwd):/backup alpine \
+  tar czf /backup/db-backup-$(date +%Y%m%d).tar.gz /data
+```
+
+**Restore backup:**
+```bash
+# Stop containers
+make prod-down
+
+# Replace database
+docker run --rm -v organized-life-db-data:/data -v $(pwd):/backup alpine \
+  tar xzf /backup/db-backup-YYYYMMDD.tar.gz -C /
+
+# Start containers
+make prod
+```
+
+## Troubleshooting
+
+### Common Issues
+
+#### Port already in use
+
+**Error**: `Bind for 0.0.0.0:5050 failed: port is already allocated`
+
+**Solution**:
+```bash
+# Check what's using the port
+lsof -i :5050  # macOS/Linux
+netstat -ano | findstr :5050  # Windows
+
+# Change port in .env
+BACKEND_PORT=5051
+
+# Or stop the conflicting process
+```
+
+#### Container fails to start
+
+**Check logs**:
+```bash
+docker compose logs backend
+docker compose logs frontend
+```
+
+**Common causes**:
+- Missing or invalid environment variables
+- Database migration errors
+- Port conflicts
+- Insufficient disk space
+
+#### Database locked
+
+**Error**: `database is locked`
+
+**Solution**:
+```bash
+# Stop all containers
+make prod-down
+
+# Remove lock file
+docker volume rm organized-life-db-data
+
+# Start again
 make prod-build
 ```
 
+#### Out of disk space
+
+**Check space**:
+```bash
+docker system df
+```
+
+**Clean up**:
+```bash
+# Remove unused data
+make prune
+
+# Or more aggressive cleanup
+docker system prune -a --volumes
+```
+
+### Reset everything
+
+```bash
+# Stop and remove everything
+make clean-all
+
+# Remove .env
+rm .env
+
+# Start fresh
+cp .env.example .env
+# Edit .env
+make dev-build
+```
+
+## Best Practices
+
+### Security
+
+1. **Never commit .env with sensitive data**
+   - Use `.env.example` as template
+   - Change `JWT_SECRET` in production
+   - Use strong, random secrets (min 32 characters)
+
+2. **Use secrets management in production**
+   - Docker Secrets
+   - Azure Key Vault
+   - AWS Secrets Manager
+   - HashiCorp Vault
+
+3. **Keep images updated**
+   ```bash
+   docker compose pull
+   docker compose up -d
+   ```
+
+### Performance
+
+1. **Use multi-stage builds**
+   - ✅ Already implemented
+   - Reduces final image size
+   - Only runtime dependencies
+
+2. **Optimize layer caching**
+   - Copy package files first
+   - Install dependencies
+   - Copy source code last
+
+3. **Limit resources in production**
+   ```yaml
+   deploy:
+     resources:
+       limits:
+         cpus: '1'
+         memory: 512M
+   ```
+
+### Maintenance
+
+1. **Regular backups**
+   - Automate database backups
+   - Test restore process
+   - Store backups securely
+
+2. **Monitor logs**
+   ```bash
+   # Rotate logs
+   docker compose logs --tail=1000 > logs/$(date +%Y%m%d).log
+   ```
+
+3. **Update dependencies**
+   ```bash
+   # Backend
+   dotnet outdated
+   dotnet add package PackageName
+
+   # Frontend
+   npm outdated
+   npm update
+   ```
+
+### CI/CD
+
+Example GitHub Actions workflow:
+
+```yaml
+name: Docker Build and Deploy
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Build images
+        run: docker compose -f docker-compose.yml -f docker-compose.prod.yml build
+      
+      - name: Run tests
+        run: docker compose run backend dotnet test
+      
+      - name: Push to registry
+        run: |
+          docker tag organizedlife-backend:latest $REGISTRY/backend:latest
+          docker push $REGISTRY/backend:latest
+```
+
 ---
 
-**Última atualização:** 30 de dezembro de 2025  
-**Autor:** Cristian Ricardo Leite
+## Additional Resources
+
+- **Docker Documentation**: https://docs.docker.com/
+- **Docker Compose Documentation**: https://docs.docker.com/compose/
+- **.NET Docker Guide**: https://docs.microsoft.com/en-us/dotnet/core/docker/introduction
+- **React Docker Guide**: https://create-react-app.dev/docs/deployment/#docker
+
+---
+
+## Support
+
+If you encounter issues:
+
+1. Check logs: `make logs`
+2. Verify health checks: `make health`
+3. Consult this documentation
+4. Open an issue on GitHub
+
+---
+
+**Last Updated**: December 30, 2025
+**Version**: 1.0.0
