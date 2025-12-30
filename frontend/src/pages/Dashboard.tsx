@@ -2,6 +2,8 @@ import { AccountBalance, Add, TrendingDown, TrendingUp } from '@mui/icons-materi
 import { Box, Button, Card, CardContent, Chip, CircularProgress, Divider, List, ListItem, ListItemIcon, ListItemText, Typography } from '@mui/material'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { BalanceTrendChart, ExpenseChart, IncomeExpenseChart } from '../components/charts'
+import { DraggableGrid } from '../components/common'
 import { StatCard } from '../components/dashboard'
 import AppLayout from '../components/layout/AppLayout'
 import { useTransactions } from '../hooks/api'
@@ -85,6 +87,68 @@ const Dashboard = () => {
             icon={<TrendingDown />}
             color="error"
             trend={{ value: 8.3, isPositive: false }}
+          />
+        </Box>
+
+        {/* Draggable Charts Section */}
+        <Box sx={{ mt: 4 }}>
+          <Typography variant="h5" fontWeight={700} gutterBottom sx={{ mb: 2 }}>
+            Financial Analytics
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+            Drag and drop to reorder your charts
+          </Typography>
+
+          <DraggableGrid
+            initialItems={[
+              {
+                id: 'balance-trend',
+                component: (
+                  <BalanceTrendChart
+                    data={[
+                      { date: 'Jan', balance: 3500 },
+                      { date: 'Feb', balance: 4200 },
+                      { date: 'Mar', balance: 3800 },
+                      { date: 'Apr', balance: 4500 },
+                      { date: 'May', balance: summary.balance },
+                    ]}
+                  />
+                ),
+              },
+              {
+                id: 'income-expense',
+                component: (
+                  <IncomeExpenseChart
+                    data={[
+                      { month: 'Jan', income: 5000, expense: 1500 },
+                      { month: 'Feb', income: 5200, expense: 1800 },
+                      { month: 'Mar', income: 4800, expense: 2200 },
+                      { month: 'Apr', income: 5500, expense: 2000 },
+                      { month: 'May', income: summary.totalIncome, expense: summary.totalExpense },
+                    ]}
+                  />
+                ),
+              },
+              {
+                id: 'expense-breakdown',
+                component: (
+                  <ExpenseChart
+                    data={transactions
+                      .filter(t => t.type === TransactionType.Expense)
+                      .reduce<Array<{ name: string; value: number }>>((acc, t) => {
+                        const categoryName = t.categoryName || 'Other'
+                        const existing = acc.find(item => item.name === categoryName)
+                        if (existing) {
+                          existing.value += t.amount
+                        } else {
+                          acc.push({ name: categoryName, value: t.amount })
+                        }
+                        return acc
+                      }, [])}
+                  />
+                ),
+              },
+            ]}
           />
         </Box>
 
