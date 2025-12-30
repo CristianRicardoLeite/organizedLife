@@ -6,6 +6,7 @@ import { BalanceTrendChart, ExpenseChart, IncomeExpenseChart } from '../componen
 import { DraggableGrid } from '../components/common'
 import { BudgetOverview, StatCard } from '../components/dashboard'
 import { GoalsOverview } from '../components/dashboard/GoalsOverview'
+import { ReportsOverview } from '../components/dashboard/ReportsOverview'
 import AppLayout from '../components/layout/AppLayout'
 import { useTransactions } from '../hooks/api'
 import { useAuth } from '../hooks/useAuth'
@@ -161,6 +162,11 @@ const Dashboard = () => {
         {/* Goals Overview Section */}
         <Box sx={{ mt: 4 }}>
           <GoalsOverview />
+        </Box>
+
+        {/* Reports Overview Section */}
+        <Box sx={{ mt: 4 }}>
+          <ReportsOverview />
         </Box>
 
         <Box sx={{ mt: 4 }}>

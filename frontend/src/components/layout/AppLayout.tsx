@@ -1,6 +1,7 @@
 import {
   AccountBalance,
   AccountCircle,
+  Assessment,
   ChevronLeft,
   ChevronRight,
   Dashboard as DashboardIcon,
@@ -53,6 +54,7 @@ const navItems: NavItem[] = [
   { text: 'Transactions', icon: <ReceiptIcon />, path: '/transactions' },
   { text: 'Budget', icon: <AccountBalance />, path: '/budget' },
   { text: 'Goals', icon: <Flag />, path: '/goals' },
+  { text: 'Reports', icon: <Assessment />, path: '/reports' },
 ]
 
 const AppLayout = ({ children }: AppLayoutProps) => {
@@ -204,7 +206,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
         }}
       >
         <Toolbar>
-          <IconButton color="inherit" aria-label="open drawer" edge="start" onClick={handleDrawerToggle} sx={{ mr: 2, display: { md: 'none' } }}>
+          <IconButton color="inherit" aria-label="open drawer" edge="start" onClick={handleDrawerToggle} sx={{ mr: 2, display: { md: 'none' }}}>
             <MenuIcon />
           </IconButton>
 
@@ -216,7 +218,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
             <IconButton color="inherit" onClick={() => navigate('/')} title="Go to Home" sx={{ mr: 1 }}>
               <HomeIcon />
             </IconButton>
-            <Typography variant="body2" sx={{ display: { xs: 'none', sm: 'block' } }}>
+            <Typography variant="body2" sx={{ display: { xs: 'none', sm: 'block' }}}>
               {user?.name}
             </Typography>
             <IconButton onClick={handleMenuOpen} sx={{ p: 0 }}>
@@ -254,7 +256,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
         </Toolbar>
       </AppBar>
 
-      <Box component="nav" sx={{ width: { md: drawerWidth }, flexShrink: { md: 0 } }}>
+      <Box component="nav" sx={{ width: { md: drawerWidth }, flexShrink: { md: 0 }}}>
         <Drawer
           variant="temporary"
           open={mobileOpen}

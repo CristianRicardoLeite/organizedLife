@@ -199,3 +199,81 @@ export interface AddContributionDto {
   date: string
   note?: string
 }
+
+// ============================================
+// REPORTS & ANALYTICS TYPES
+// ============================================
+
+export enum ReportPeriod {
+  Monthly = 'Monthly',
+  Quarterly = 'Quarterly',
+  Yearly = 'Yearly',
+  Custom = 'Custom',
+}
+
+export enum ReportType {
+  IncomeVsExpense = 'Income vs Expense',
+  CategoryBreakdown = 'Category Breakdown',
+  Trends = 'Trends',
+  GoalsProgress = 'Goals Progress',
+  BudgetPerformance = 'Budget Performance',
+}
+
+export interface DateRange {
+  startDate: string
+  endDate: string
+}
+
+export interface CategoryReportData {
+  categoryId: number
+  categoryName: string
+  categoryIcon?: string
+  categoryColor?: string
+  totalAmount: number
+  transactionCount: number
+  percentage: number
+}
+
+export interface MonthlyData {
+  month: string
+  income: number
+  expense: number
+  balance: number
+}
+
+export interface ReportSummary {
+  period: ReportPeriod
+  dateRange: DateRange
+  totalIncome: number
+  totalExpense: number
+  netBalance: number
+  avgDailyIncome: number
+  avgDailyExpense: number
+  transactionCount: number
+  topIncomeCategory?: CategoryReportData
+  topExpenseCategory?: CategoryReportData
+  savingsRate: number // percentage
+}
+
+export interface Report {
+  id: number
+  type: ReportType
+  period: ReportPeriod
+  dateRange: DateRange
+  summary: ReportSummary
+  incomeByCategory: CategoryReportData[]
+  expenseByCategory: CategoryReportData[]
+  monthlyData: MonthlyData[]
+  generatedAt: string
+}
+
+export interface GenerateReportDto {
+  period: ReportPeriod
+  dateRange?: DateRange
+  types?: ReportType[]
+}
+
+export interface ExportReportDto {
+  reportId: number
+  format: 'pdf' | 'csv' | 'excel'
+}
