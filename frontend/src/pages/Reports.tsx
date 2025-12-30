@@ -1,27 +1,14 @@
-import React, { useEffect, useState } from 'react'
-import {
-  Alert,
-  Box,
-  Button,
-  Card,
-  CardContent,
-  Container,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  TextField,
-  Typography,
-} from '@mui/material'
 import { Download as DownloadIcon, Refresh as RefreshIcon } from '@mui/icons-material'
+import { Alert, Box, Button, Card, CardContent, Container, FormControl, InputLabel, MenuItem, Select, TextField, Typography } from '@mui/material'
+import React, { useEffect, useState } from 'react'
+import { BalanceTrendChart, ExpenseChart, IncomeExpenseChart } from '../components/charts'
 import AppLayout from '../components/layout/AppLayout'
 import { useReports } from '../hooks/api/useReports'
 import { ReportPeriod } from '../types'
-import { BalanceTrendChart, ExpenseChart, IncomeExpenseChart } from '../components/charts'
 
 export const Reports: React.FC = () => {
   const { loading, currentReport, generateReport, exportReport, getDateRangeForPeriod } = useReports()
-  
+
   const [period, setPeriod] = useState<ReportPeriod>(ReportPeriod.Monthly)
   const [customStartDate, setCustomStartDate] = useState('')
   const [customEndDate, setCustomEndDate] = useState('')
@@ -35,9 +22,7 @@ export const Reports: React.FC = () => {
   const handleGenerateReport = async () => {
     setError(null)
     try {
-      const dateRange = period === ReportPeriod.Custom
-        ? { startDate: customStartDate, endDate: customEndDate }
-        : getDateRangeForPeriod(period)
+      const dateRange = period === ReportPeriod.Custom ? { startDate: customStartDate, endDate: customEndDate } : getDateRangeForPeriod(period)
 
       if (period === ReportPeriod.Custom && (!customStartDate || !customEndDate)) {
         setError('Please select both start and end dates for custom period')
@@ -90,11 +75,7 @@ export const Reports: React.FC = () => {
             <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
               <FormControl sx={{ minWidth: 200 }}>
                 <InputLabel>Period</InputLabel>
-                <Select
-                  value={period}
-                  onChange={e => setPeriod(e.target.value as ReportPeriod)}
-                  label="Period"
-                >
+                <Select value={period} onChange={e => setPeriod(e.target.value as ReportPeriod)} label="Period">
                   <MenuItem value={ReportPeriod.Monthly}>Monthly (Last 30 days)</MenuItem>
                   <MenuItem value={ReportPeriod.Quarterly}>Quarterly (Last 3 months)</MenuItem>
                   <MenuItem value={ReportPeriod.Yearly}>Yearly (Last 12 months)</MenuItem>
@@ -121,39 +102,19 @@ export const Reports: React.FC = () => {
                 </>
               )}
 
-              <Button
-                variant="contained"
-                startIcon={<RefreshIcon />}
-                onClick={handleGenerateReport}
-                disabled={loading}
-              >
+              <Button variant="contained" startIcon={<RefreshIcon />} onClick={handleGenerateReport} disabled={loading}>
                 {loading ? 'Generating...' : 'Generate Report'}
               </Button>
 
               {currentReport && (
                 <Box sx={{ ml: 'auto', display: 'flex', gap: 1 }}>
-                  <Button
-                    variant="outlined"
-                    startIcon={<DownloadIcon />}
-                    onClick={() => handleExport('pdf')}
-                    size="small"
-                  >
+                  <Button variant="outlined" startIcon={<DownloadIcon />} onClick={() => handleExport('pdf')} size="small">
                     PDF
                   </Button>
-                  <Button
-                    variant="outlined"
-                    startIcon={<DownloadIcon />}
-                    onClick={() => handleExport('csv')}
-                    size="small"
-                  >
+                  <Button variant="outlined" startIcon={<DownloadIcon />} onClick={() => handleExport('csv')} size="small">
                     CSV
                   </Button>
-                  <Button
-                    variant="outlined"
-                    startIcon={<DownloadIcon />}
-                    onClick={() => handleExport('excel')}
-                    size="small"
-                  >
+                  <Button variant="outlined" startIcon={<DownloadIcon />} onClick={() => handleExport('excel')} size="small">
                     Excel
                   </Button>
                 </Box>
@@ -168,11 +129,7 @@ export const Reports: React.FC = () => {
           </Typography>
         )}
 
-        {!loading && !currentReport && (
-          <Alert severity="info">
-            Select a period and click &ldquo;Generate Report&rdquo; to view analytics
-          </Alert>
-        )}
+        {!loading && !currentReport && <Alert severity="info">Select a period and click &ldquo;Generate Report&rdquo; to view analytics</Alert>}
 
         {!loading && currentReport && (
           <>
@@ -231,10 +188,7 @@ export const Reports: React.FC = () => {
                   <Typography color="text.secondary" gutterBottom>
                     Net Balance
                   </Typography>
-                  <Typography
-                    variant="h5"
-                    color={currentReport.summary.netBalance >= 0 ? 'success.main' : 'error.main'}
-                  >
+                  <Typography variant="h5" color={currentReport.summary.netBalance >= 0 ? 'success.main' : 'error.main'}>
                     {formatCurrency(currentReport.summary.netBalance)}
                   </Typography>
                   <Typography variant="caption" color="text.secondary">
@@ -248,10 +202,7 @@ export const Reports: React.FC = () => {
                   <Typography color="text.secondary" gutterBottom>
                     Savings Rate
                   </Typography>
-                  <Typography
-                    variant="h5"
-                    color={currentReport.summary.savingsRate >= 20 ? 'success.main' : 'warning.main'}
-                  >
+                  <Typography variant="h5" color={currentReport.summary.savingsRate >= 20 ? 'success.main' : 'warning.main'}>
                     {currentReport.summary.savingsRate.toFixed(1)}%
                   </Typography>
                   <Typography variant="caption" color="text.secondary">
@@ -275,12 +226,11 @@ export const Reports: React.FC = () => {
                           Top Income Category
                         </Typography>
                         <Typography variant="h6" color="success.main">
-                          {currentReport.summary.topIncomeCategory.categoryIcon}{' '}
-                          {currentReport.summary.topIncomeCategory.categoryName}
+                          {currentReport.summary.topIncomeCategory.categoryIcon} {currentReport.summary.topIncomeCategory.categoryName}
                         </Typography>
                         <Typography variant="body2">
-                          {formatCurrency(currentReport.summary.topIncomeCategory.totalAmount)} (
-                          {currentReport.summary.topIncomeCategory.percentage.toFixed(1)}%)
+                          {formatCurrency(currentReport.summary.topIncomeCategory.totalAmount)} ({currentReport.summary.topIncomeCategory.percentage.toFixed(1)}
+                          %)
                         </Typography>
                       </Box>
                     )}
@@ -290,8 +240,7 @@ export const Reports: React.FC = () => {
                           Top Expense Category
                         </Typography>
                         <Typography variant="h6" color="error.main">
-                          {currentReport.summary.topExpenseCategory.categoryIcon}{' '}
-                          {currentReport.summary.topExpenseCategory.categoryName}
+                          {currentReport.summary.topExpenseCategory.categoryIcon} {currentReport.summary.topExpenseCategory.categoryName}
                         </Typography>
                         <Typography variant="body2">
                           {formatCurrency(currentReport.summary.topExpenseCategory.totalAmount)} (

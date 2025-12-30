@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react'
 import { CategoryReportData, DateRange, GenerateReportDto, MonthlyData, Report, ReportPeriod, ReportSummary, ReportType } from '../../types'
-import { useTransactions } from './useTransactions'
 import { useCategories } from './useCategories'
+import { useTransactions } from './useTransactions'
 
 /**
  * Mock hook for Reports & Analytics
@@ -10,7 +10,7 @@ import { useCategories } from './useCategories'
 export const useReports = () => {
   const [loading, setLoading] = useState(false)
   const [currentReport, setCurrentReport] = useState<Report | null>(null)
-  
+
   const { transactions } = useTransactions()
   const { categories } = useCategories()
 
@@ -18,7 +18,7 @@ export const useReports = () => {
   const getDateRangeForPeriod = useCallback((period: ReportPeriod): DateRange => {
     const today = new Date()
     const startDate = new Date()
-    
+
     switch (period) {
       case ReportPeriod.Monthly:
         startDate.setMonth(today.getMonth() - 1)
@@ -32,7 +32,7 @@ export const useReports = () => {
       default:
         startDate.setMonth(today.getMonth() - 1)
     }
-    
+
     return {
       startDate: startDate.toISOString().split('T')[0],
       endDate: today.toISOString().split('T')[0],
@@ -52,52 +52,53 @@ export const useReports = () => {
   )
 
   // Calculate category breakdown
-  const calculateCategoryBreakdown = useCallback((filteredTransactions: typeof transactions, isIncome: boolean) => {
-    const categoryMap = new Map<number, CategoryReportData>()
-    const total = filteredTransactions
-      .filter(t => isIncome ? t.type === 'Income' : t.type === 'Expense')
-      .reduce((sum, t) => sum + t.amount, 0)
+  const calculateCategoryBreakdown = useCallback(
+    (filteredTransactions: typeof transactions, isIncome: boolean) => {
+      const categoryMap = new Map<number, CategoryReportData>()
+      const total = filteredTransactions.filter(t => (isIncome ? t.type === 'Income' : t.type === 'Expense')).reduce((sum, t) => sum + t.amount, 0)
 
-    filteredTransactions
-      .filter(t => isIncome ? t.type === 'Income' : t.type === 'Expense')
-      .forEach(t => {
-        if (!t.categoryId) return
-        
-        const existing = categoryMap.get(t.categoryId)
-        if (existing) {
-          existing.totalAmount += t.amount
-          existing.transactionCount += 1
-        } else {
-          const category = categories.find(c => c.id === t.categoryId)
-          categoryMap.set(t.categoryId, {
-            categoryId: t.categoryId,
-            categoryName: t.categoryName || category?.name || 'Unknown',
-            categoryIcon: t.categoryIcon || category?.icon,
-            categoryColor: t.categoryColor || category?.color,
-            totalAmount: t.amount,
-            transactionCount: 1,
-            percentage: 0,
-          })
-        }
-      })
+      filteredTransactions
+        .filter(t => (isIncome ? t.type === 'Income' : t.type === 'Expense'))
+        .forEach(t => {
+          if (!t.categoryId) return
 
-    // Calculate percentages
-    const result = Array.from(categoryMap.values()).map(cat => ({
-      ...cat,
-      percentage: total > 0 ? (cat.totalAmount / total) * 100 : 0,
-    }))
+          const existing = categoryMap.get(t.categoryId)
+          if (existing) {
+            existing.totalAmount += t.amount
+            existing.transactionCount += 1
+          } else {
+            const category = categories.find(c => c.id === t.categoryId)
+            categoryMap.set(t.categoryId, {
+              categoryId: t.categoryId,
+              categoryName: t.categoryName || category?.name || 'Unknown',
+              categoryIcon: t.categoryIcon || category?.icon,
+              categoryColor: t.categoryColor || category?.color,
+              totalAmount: t.amount,
+              transactionCount: 1,
+              percentage: 0,
+            })
+          }
+        })
 
-    return result.sort((a, b) => b.totalAmount - a.totalAmount)
-  }, [categories])
+      // Calculate percentages
+      const result = Array.from(categoryMap.values()).map(cat => ({
+        ...cat,
+        percentage: total > 0 ? (cat.totalAmount / total) * 100 : 0,
+      }))
+
+      return result.sort((a, b) => b.totalAmount - a.totalAmount)
+    },
+    [categories],
+  )
 
   // Generate monthly data for trends
   const generateMonthlyData = useCallback((filteredTransactions: typeof transactions): MonthlyData[] => {
     const monthlyMap = new Map<string, MonthlyData>()
-    
+
     filteredTransactions.forEach(t => {
       const date = new Date(t.date)
       const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`
-      
+
       const existing = monthlyMap.get(monthKey)
       if (existing) {
         if (t.type === 'Income') {
@@ -125,93 +126,95 @@ export const useReports = () => {
   }, [])
 
   // Generate report
-  const generateReport = useCallback(async (dto: GenerateReportDto): Promise<Report> => {
-    setLoading(true)
-    try {
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 500))
+  const generateReport = useCallback(
+    async (dto: GenerateReportDto): Promise<Report> => {
+      setLoading(true)
+      try {
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 500))
 
-      const dateRange = dto.dateRange || getDateRangeForPeriod(dto.period)
-      const filteredTransactions = filterTransactionsByDateRange(dateRange)
+        const dateRange = dto.dateRange || getDateRangeForPeriod(dto.period)
+        const filteredTransactions = filterTransactionsByDateRange(dateRange)
 
-      // Calculate totals
-      const totalIncome = filteredTransactions
-        .filter(t => t.type === 'Income')
-        .reduce((sum, t) => sum + t.amount, 0)
-      
-      const totalExpense = filteredTransactions
-        .filter(t => t.type === 'Expense')
-        .reduce((sum, t) => sum + t.amount, 0)
-      
-      const netBalance = totalIncome - totalExpense
+        // Calculate totals
+        const totalIncome = filteredTransactions.filter(t => t.type === 'Income').reduce((sum, t) => sum + t.amount, 0)
 
-      // Calculate days in period
-      const startDate = new Date(dateRange.startDate)
-      const endDate = new Date(dateRange.endDate)
-      const daysDiff = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) || 1
+        const totalExpense = filteredTransactions.filter(t => t.type === 'Expense').reduce((sum, t) => sum + t.amount, 0)
 
-      // Category breakdowns
-      const incomeByCategory = calculateCategoryBreakdown(filteredTransactions, true)
-      const expenseByCategory = calculateCategoryBreakdown(filteredTransactions, false)
+        const netBalance = totalIncome - totalExpense
 
-      // Monthly data
-      const monthlyData = generateMonthlyData(filteredTransactions)
+        // Calculate days in period
+        const startDate = new Date(dateRange.startDate)
+        const endDate = new Date(dateRange.endDate)
+        const daysDiff = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) || 1
 
-      // Savings rate
-      const savingsRate = totalIncome > 0 ? ((totalIncome - totalExpense) / totalIncome) * 100 : 0
+        // Category breakdowns
+        const incomeByCategory = calculateCategoryBreakdown(filteredTransactions, true)
+        const expenseByCategory = calculateCategoryBreakdown(filteredTransactions, false)
 
-      const summary: ReportSummary = {
-        period: dto.period,
-        dateRange,
-        totalIncome,
-        totalExpense,
-        netBalance,
-        avgDailyIncome: totalIncome / daysDiff,
-        avgDailyExpense: totalExpense / daysDiff,
-        transactionCount: filteredTransactions.length,
-        topIncomeCategory: incomeByCategory[0],
-        topExpenseCategory: expenseByCategory[0],
-        savingsRate,
+        // Monthly data
+        const monthlyData = generateMonthlyData(filteredTransactions)
+
+        // Savings rate
+        const savingsRate = totalIncome > 0 ? ((totalIncome - totalExpense) / totalIncome) * 100 : 0
+
+        const summary: ReportSummary = {
+          period: dto.period,
+          dateRange,
+          totalIncome,
+          totalExpense,
+          netBalance,
+          avgDailyIncome: totalIncome / daysDiff,
+          avgDailyExpense: totalExpense / daysDiff,
+          transactionCount: filteredTransactions.length,
+          topIncomeCategory: incomeByCategory[0],
+          topExpenseCategory: expenseByCategory[0],
+          savingsRate,
+        }
+
+        const report: Report = {
+          id: Date.now(),
+          type: ReportType.IncomeVsExpense,
+          period: dto.period,
+          dateRange,
+          summary,
+          incomeByCategory,
+          expenseByCategory,
+          monthlyData,
+          generatedAt: new Date().toISOString(),
+        }
+
+        setCurrentReport(report)
+        return report
+      } catch (error) {
+        console.error('Error generating report:', error)
+        throw error
+      } finally {
+        setLoading(false)
       }
-
-      const report: Report = {
-        id: Date.now(),
-        type: ReportType.IncomeVsExpense,
-        period: dto.period,
-        dateRange,
-        summary,
-        incomeByCategory,
-        expenseByCategory,
-        monthlyData,
-        generatedAt: new Date().toISOString(),
-      }
-
-      setCurrentReport(report)
-      return report
-    } catch (error) {
-      console.error('Error generating report:', error)
-      throw error
-    } finally {
-      setLoading(false)
-    }
-  }, [getDateRangeForPeriod, filterTransactionsByDateRange, calculateCategoryBreakdown, generateMonthlyData])
+    },
+    [getDateRangeForPeriod, filterTransactionsByDateRange, calculateCategoryBreakdown, generateMonthlyData],
+  )
 
   // Export report (mock)
-  const exportReport = useCallback(async (format: 'pdf' | 'csv' | 'excel'): Promise<void> => {
-    if (!currentReport) {
-      throw new Error('No report to export')
-    }
+  const exportReport = useCallback(
+    async (format: 'pdf' | 'csv' | 'excel'): Promise<void> => {
+      if (!currentReport) {
+        throw new Error('No report to export')
+      }
 
-    // Simulate export delay
-    await new Promise(resolve => setTimeout(resolve, 1000))
+      // Simulate export delay
+      await new Promise(resolve => setTimeout(resolve, 1000))
 
-    // In a real app, this would trigger a download
-    console.log(`Exporting report as ${format}...`)
-    console.log('Report data:', currentReport)
+      // In a real app, this would trigger a download
+      console.log(`Exporting report as ${format}...`)
+      console.log('Report data:', currentReport)
 
-    // Mock success message
-    alert(`Report exported successfully as ${format.toUpperCase()}!`)
-  }, [currentReport])
+      // Mock success message
+      alert(`Report exported successfully as ${format.toUpperCase()}!`)
+    },
+    [currentReport],
+  )
 
   // Get quick summary for dashboard
   const getQuickSummary = useCallback((): ReportSummary | null => {
@@ -220,14 +223,10 @@ export const useReports = () => {
 
     if (filteredTransactions.length === 0) return null
 
-    const totalIncome = filteredTransactions
-      .filter(t => t.type === 'Income')
-      .reduce((sum, t) => sum + t.amount, 0)
-    
-    const totalExpense = filteredTransactions
-      .filter(t => t.type === 'Expense')
-      .reduce((sum, t) => sum + t.amount, 0)
-    
+    const totalIncome = filteredTransactions.filter(t => t.type === 'Income').reduce((sum, t) => sum + t.amount, 0)
+
+    const totalExpense = filteredTransactions.filter(t => t.type === 'Expense').reduce((sum, t) => sum + t.amount, 0)
+
     const netBalance = totalIncome - totalExpense
     const savingsRate = totalIncome > 0 ? ((totalIncome - totalExpense) / totalIncome) * 100 : 0
 
