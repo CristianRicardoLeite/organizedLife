@@ -1,5 +1,5 @@
-import { useState, useCallback } from 'react'
-import { Category, CreateCategoryDto, CategoryType } from '../../types'
+import { useCallback, useState } from 'react'
+import { Category, CategoryType, CreateCategoryDto } from '../../types'
 
 // Mock data
 const mockCategories: Category[] = [
@@ -23,55 +23,61 @@ export const useCategories = () => {
   const fetchCategories = useCallback(async () => {
     setLoading(true)
     setError(null)
-    
+
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 400))
-    
+
     setCategories(mockCategories)
     setLoading(false)
   }, [])
 
-  const getCategory = useCallback(async (id: number): Promise<Category | null> => {
-    setLoading(true)
-    setError(null)
-    
-    await new Promise(resolve => setTimeout(resolve, 300))
-    
-    const category = categories.find(c => c.id === id) || null
-    setLoading(false)
-    return category
-  }, [categories])
+  const getCategory = useCallback(
+    async (id: number): Promise<Category | null> => {
+      setLoading(true)
+      setError(null)
 
-  const createCategory = useCallback(async (data: CreateCategoryDto): Promise<Category> => {
-    setLoading(true)
-    setError(null)
-    
-    await new Promise(resolve => setTimeout(resolve, 500))
-    
-    const newCategory: Category = {
-      id: Math.max(...categories.map(c => c.id)) + 1,
-      ...data,
-      userId: 1,
-    }
-    
-    setCategories(prev => [...prev, newCategory])
-    setLoading(false)
-    return newCategory
-  }, [categories])
+      await new Promise(resolve => setTimeout(resolve, 300))
+
+      const category = categories.find(c => c.id === id) || null
+      setLoading(false)
+      return category
+    },
+    [categories],
+  )
+
+  const createCategory = useCallback(
+    async (data: CreateCategoryDto): Promise<Category> => {
+      setLoading(true)
+      setError(null)
+
+      await new Promise(resolve => setTimeout(resolve, 500))
+
+      const newCategory: Category = {
+        id: Math.max(...categories.map(c => c.id)) + 1,
+        ...data,
+        userId: 1,
+      }
+
+      setCategories(prev => [...prev, newCategory])
+      setLoading(false)
+      return newCategory
+    },
+    [categories],
+  )
 
   const updateCategory = useCallback(async (id: number, data: CreateCategoryDto): Promise<Category> => {
     setLoading(true)
     setError(null)
-    
+
     await new Promise(resolve => setTimeout(resolve, 500))
-    
+
     const updatedCategory: Category = {
       id,
       ...data,
       userId: 1,
     }
-    
-    setCategories(prev => prev.map(c => c.id === id ? updatedCategory : c))
+
+    setCategories(prev => prev.map(c => (c.id === id ? updatedCategory : c)))
     setLoading(false)
     return updatedCategory
   }, [])
@@ -79,16 +85,14 @@ export const useCategories = () => {
   const deleteCategory = useCallback(async (id: number): Promise<void> => {
     setLoading(true)
     setError(null)
-    
+
     await new Promise(resolve => setTimeout(resolve, 500))
-    
+
     setCategories(prev => prev.filter(c => c.id !== id))
     setLoading(false)
   }, [])
 
-  const getCategoriesByType = useCallback((type: CategoryType): Category[] =>
-    categories.filter(c => c.type === type)
-  , [categories])
+  const getCategoriesByType = useCallback((type: CategoryType): Category[] => categories.filter(c => c.type === type), [categories])
 
   return {
     categories,

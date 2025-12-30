@@ -1,29 +1,11 @@
+import { AccountBalance, Add, TrendingDown, TrendingUp } from '@mui/icons-material'
+import { Box, Button, Card, CardContent, Chip, CircularProgress, Divider, List, ListItem, ListItemIcon, ListItemText, Typography } from '@mui/material'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import {
-  AccountBalance,
-  TrendingDown,
-  TrendingUp,
-  Add,
-} from '@mui/icons-material'
-import {
-  Box,
-  Card,
-  CardContent,
-  Typography,
-  Button,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemIcon,
-  Chip,
-  Divider,
-  CircularProgress,
-} from '@mui/material'
 import { StatCard } from '../components/dashboard'
 import AppLayout from '../components/layout/AppLayout'
-import { useAuth } from '../hooks/useAuth'
 import { useTransactions } from '../hooks/api'
+import { useAuth } from '../hooks/useAuth'
 import { TransactionType } from '../types'
 
 const Dashboard = () => {
@@ -120,11 +102,7 @@ const Dashboard = () => {
                 <Typography variant="h6" fontWeight={600}>
                   Recent Transactions
                 </Typography>
-                <Button
-                  variant="outlined"
-                  size="small"
-                  onClick={() => navigate('/transactions')}
-                >
+                <Button variant="outlined" size="small" onClick={() => navigate('/transactions')}>
                   View All
                 </Button>
               </Box>
@@ -143,11 +121,7 @@ const Dashboard = () => {
                   <Typography variant="body1" color="text.secondary">
                     No transactions yet. Start by adding your first transaction!
                   </Typography>
-                  <Button
-                    variant="contained"
-                    startIcon={<Add />}
-                    onClick={() => navigate('/transactions')}
-                  >
+                  <Button variant="contained" startIcon={<Add />} onClick={() => navigate('/transactions')}>
                     Add Transaction
                   </Button>
                 </Box>
@@ -195,15 +169,7 @@ const Dashboard = () => {
                               <Typography variant="body1" fontWeight={600}>
                                 {transaction.description}
                               </Typography>
-                              <Typography
-                                variant="h6"
-                                fontWeight={700}
-                                color={
-                                  transaction.type === TransactionType.Income
-                                    ? 'success.main'
-                                    : 'error.main'
-                                }
-                              >
+                              <Typography variant="h6" fontWeight={700} color={transaction.type === TransactionType.Income ? 'success.main' : 'error.main'}>
                                 {transaction.type === TransactionType.Income ? '+' : '-'}
                                 {formatCurrency(transaction.amount)}
                               </Typography>

@@ -1,5 +1,5 @@
-import { useState, useCallback } from 'react'
-import { Transaction, TransactionSummary, CreateTransactionDto, TransactionType } from '../../types'
+import { useCallback, useState } from 'react'
+import { CreateTransactionDto, Transaction, TransactionSummary, TransactionType } from '../../types'
 
 // Mock data
 const mockTransactions: Transaction[] = [
@@ -109,51 +109,57 @@ export const useTransactions = () => {
   const fetchTransactions = useCallback(async () => {
     setLoading(true)
     setError(null)
-    
+
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 500))
-    
+
     setTransactions(mockTransactions)
     setLoading(false)
   }, [])
 
-  const getTransaction = useCallback(async (id: number): Promise<Transaction | null> => {
-    setLoading(true)
-    setError(null)
-    
-    await new Promise(resolve => setTimeout(resolve, 300))
-    
-    const transaction = transactions.find(t => t.id === id) || null
-    setLoading(false)
-    return transaction
-  }, [transactions])
+  const getTransaction = useCallback(
+    async (id: number): Promise<Transaction | null> => {
+      setLoading(true)
+      setError(null)
 
-  const createTransaction = useCallback(async (data: CreateTransactionDto): Promise<Transaction> => {
-    setLoading(true)
-    setError(null)
-    
-    await new Promise(resolve => setTimeout(resolve, 500))
-    
-    const newTransaction: Transaction = {
-      id: Math.max(...transactions.map(t => t.id)) + 1,
-      ...data,
-      categoryName: 'New Category',
-      categoryColor: '#9E9E9E',
-      categoryIcon: '📌',
-      createdAt: new Date().toISOString(),
-    }
-    
-    setTransactions(prev => [newTransaction, ...prev])
-    setLoading(false)
-    return newTransaction
-  }, [transactions])
+      await new Promise(resolve => setTimeout(resolve, 300))
+
+      const transaction = transactions.find(t => t.id === id) || null
+      setLoading(false)
+      return transaction
+    },
+    [transactions],
+  )
+
+  const createTransaction = useCallback(
+    async (data: CreateTransactionDto): Promise<Transaction> => {
+      setLoading(true)
+      setError(null)
+
+      await new Promise(resolve => setTimeout(resolve, 500))
+
+      const newTransaction: Transaction = {
+        id: Math.max(...transactions.map(t => t.id)) + 1,
+        ...data,
+        categoryName: 'New Category',
+        categoryColor: '#9E9E9E',
+        categoryIcon: '📌',
+        createdAt: new Date().toISOString(),
+      }
+
+      setTransactions(prev => [newTransaction, ...prev])
+      setLoading(false)
+      return newTransaction
+    },
+    [transactions],
+  )
 
   const updateTransaction = useCallback(async (id: number, data: CreateTransactionDto): Promise<Transaction> => {
     setLoading(true)
     setError(null)
-    
+
     await new Promise(resolve => setTimeout(resolve, 500))
-    
+
     const updatedTransaction: Transaction = {
       id,
       ...data,
@@ -162,8 +168,8 @@ export const useTransactions = () => {
       categoryIcon: '📌',
       createdAt: new Date().toISOString(),
     }
-    
-    setTransactions(prev => prev.map(t => t.id === id ? updatedTransaction : t))
+
+    setTransactions(prev => prev.map(t => (t.id === id ? updatedTransaction : t)))
     setLoading(false)
     return updatedTransaction
   }, [])
@@ -171,22 +177,18 @@ export const useTransactions = () => {
   const deleteTransaction = useCallback(async (id: number): Promise<void> => {
     setLoading(true)
     setError(null)
-    
+
     await new Promise(resolve => setTimeout(resolve, 500))
-    
+
     setTransactions(prev => prev.filter(t => t.id !== id))
     setLoading(false)
   }, [])
 
   const getSummary = useCallback((): TransactionSummary => {
-    const totalIncome = transactions
-      .filter(t => t.type === TransactionType.Income)
-      .reduce((sum, t) => sum + t.amount, 0)
-    
-    const totalExpense = transactions
-      .filter(t => t.type === TransactionType.Expense)
-      .reduce((sum, t) => sum + t.amount, 0)
-    
+    const totalIncome = transactions.filter(t => t.type === TransactionType.Income).reduce((sum, t) => sum + t.amount, 0)
+
+    const totalExpense = transactions.filter(t => t.type === TransactionType.Expense).reduce((sum, t) => sum + t.amount, 0)
+
     return {
       totalIncome,
       totalExpense,
