@@ -1,16 +1,87 @@
-import { Link } from 'react-router-dom'
+import { Link as RouterLink } from 'react-router-dom'
+import {
+  Container,
+  Box,
+  Typography,
+  Button,
+  Stack,
+  Paper,
+} from '@mui/material'
+import { Login as LoginIcon, PersonAdd as RegisterIcon } from '@mui/icons-material'
 
 const Home = () => (
-  <div style={{ padding: '2rem', textAlign: 'center' }}>
-    <h1>OrganizedLife</h1>
-    <p>Sistema de Organização Financeira</p>
-    <div style={{ marginTop: '2rem' }}>
-      <Link to="/login" style={{ marginRight: '1rem' }}>
-        Login
-      </Link>
-      <Link to="/register">Cadastrar</Link>
-    </div>
-  </div>
+  <Container maxWidth="sm">
+    <Box
+      sx={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
+      <Paper
+        elevation={3}
+        sx={{
+          p: 6,
+          textAlign: 'center',
+          borderRadius: 2,
+          width: '100%',
+        }}
+      >
+        <Typography
+          variant="h2"
+          component="h1"
+          gutterBottom
+          sx={{
+            fontWeight: 700,
+            color: 'primary.main',
+            mb: 2,
+          }}
+        >
+          OrganizedLife
+        </Typography>
+
+        <Typography
+          variant="h5"
+          color="text.secondary"
+          gutterBottom
+          sx={{ mb: 4 }}
+        >
+          Sistema de Organização Financeira
+        </Typography>
+
+        <Stack
+          direction="row"
+          spacing={2}
+          justifyContent="center"
+        >
+          <Button
+            component={RouterLink}
+            to="/login"
+            variant="contained"
+            size="large"
+            startIcon={<LoginIcon />}
+            sx={{ px: 4, py: 1.5 }}
+          >
+            Login
+          </Button>
+
+          <Button
+            component={RouterLink}
+            to="/register"
+            variant="outlined"
+            size="large"
+            startIcon={<RegisterIcon />}
+            sx={{ px: 4, py: 1.5 }}
+          >
+            Cadastrar
+          </Button>
+        </Stack>
+      </Paper>
+    </Box>
+  </Container>
 )
 
 export default Home
+
+
