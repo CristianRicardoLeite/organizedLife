@@ -1,4 +1,4 @@
-import { AccountCircle, AccountBalance, ChevronLeft, ChevronRight, Dashboard as DashboardIcon, Logout, Menu as MenuIcon, Receipt as ReceiptIcon } from '@mui/icons-material'
+import { AccountCircle, AccountBalance, ChevronLeft, ChevronRight, Dashboard as DashboardIcon, Flag, Logout, Menu as MenuIcon, Receipt as ReceiptIcon } from '@mui/icons-material'
 import {
   AppBar,
   Avatar,
@@ -41,6 +41,7 @@ const navItems: NavItem[] = [
   { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
   { text: 'Transactions', icon: <ReceiptIcon />, path: '/transactions' },
   { text: 'Budget', icon: <AccountBalance />, path: '/budget' },
+  { text: 'Goals', icon: <Flag />, path: '/goals' },
 ]
 
 const AppLayout = ({ children }: AppLayoutProps) => {
