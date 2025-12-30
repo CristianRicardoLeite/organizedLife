@@ -1,44 +1,33 @@
-import React, { useEffect, useState } from 'react'
+import { Add as AddIcon } from '@mui/icons-material'
 import {
+  Alert,
   Box,
   Button,
   Card,
   CardContent,
   Container,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   Fab,
   FormControl,
   InputLabel,
   MenuItem,
   Select,
   Typography,
-  Alert,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
 } from '@mui/material'
-import { Add as AddIcon } from '@mui/icons-material'
-import { useGoals } from '../hooks/api/useGoals'
+import React, { useEffect, useState } from 'react'
+import { ContributionDialog } from '../components/goals/ContributionDialog'
 import { GoalCard } from '../components/goals/GoalCard'
 import { GoalDialog } from '../components/goals/GoalDialog'
-import { ContributionDialog } from '../components/goals/ContributionDialog'
+import { useGoals } from '../hooks/api/useGoals'
 import { AddContributionDto, CreateGoalDto, Goal, GoalStatus, UpdateGoalDto } from '../types'
 
 export const Goals: React.FC = () => {
-  const {
-    goals,
-    loading,
-    fetchGoals,
-    createGoal,
-    updateGoal,
-    deleteGoal,
-    addContribution,
-    getSummary,
-    getProgress,
-    getRemaining,
-    getDaysRemaining,
-  } = useGoals()
+  const { goals, loading, fetchGoals, createGoal, updateGoal, deleteGoal, addContribution, getSummary, getProgress, getRemaining, getDaysRemaining } =
+    useGoals()
 
   const [statusFilter, setStatusFilter] = useState<GoalStatus | 'all'>('all')
   const [goalDialogOpen, setGoalDialogOpen] = useState(false)

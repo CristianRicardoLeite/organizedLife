@@ -150,10 +150,10 @@ export const useGoals = () => {
           prev.map(goal =>
             goal.id === data.id
               ? {
-                ...goal,
-                ...data,
-                updatedAt: new Date().toISOString(),
-              }
+                  ...goal,
+                  ...data,
+                  updatedAt: new Date().toISOString(),
+                }
               : goal,
           ),
         )
@@ -288,15 +288,18 @@ export const useGoals = () => {
   }, [])
 
   // Estimate monthly contribution needed
-  const getMonthlyContributionNeeded = useCallback((goal: Goal): number | null => {
-    if (!goal.targetDate) return null
-    const daysRemaining = getDaysRemaining(goal)
-    if (!daysRemaining || daysRemaining <= 0) return null
+  const getMonthlyContributionNeeded = useCallback(
+    (goal: Goal): number | null => {
+      if (!goal.targetDate) return null
+      const daysRemaining = getDaysRemaining(goal)
+      if (!daysRemaining || daysRemaining <= 0) return null
 
-    const remaining = getRemaining(goal)
-    const monthsRemaining = daysRemaining / 30
-    return remaining / monthsRemaining
-  }, [getDaysRemaining, getRemaining])
+      const remaining = getRemaining(goal)
+      const monthsRemaining = daysRemaining / 30
+      return remaining / monthsRemaining
+    },
+    [getDaysRemaining, getRemaining],
+  )
 
   return {
     goals,

@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react'
-import { Box, Button, Card, CardContent, CardHeader, LinearProgress, Typography } from '@mui/material'
 import { Add as AddIcon, Flag as FlagIcon } from '@mui/icons-material'
+import { Box, Button, Card, CardContent, CardHeader, LinearProgress, Typography } from '@mui/material'
+import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useGoals } from '../../hooks/api/useGoals'
 import { GoalStatus } from '../../types'
@@ -16,9 +16,7 @@ export const GoalsOverview: React.FC = () => {
 
   const summary = getSummary()
   const activeGoals = goals.filter(g => g.status === GoalStatus.Active)
-  const topGoals = activeGoals
-    .sort((a, b) => getProgress(b) - getProgress(a))
-    .slice(0, 3)
+  const topGoals = activeGoals.sort((a, b) => getProgress(b) - getProgress(a)).slice(0, 3)
 
   const formatCurrency = (value: number): string =>
     new Intl.NumberFormat('pt-BR', {
@@ -113,7 +111,12 @@ export const GoalsOverview: React.FC = () => {
                         {progress.toFixed(1)}%
                       </Typography>
                     </Box>
-                    <LinearProgress variant="determinate" value={Math.min(progress, 100)} color={getProgressColor(progress)} sx={{ height: 6, borderRadius: 1 }} />
+                    <LinearProgress
+                      variant="determinate"
+                      value={Math.min(progress, 100)}
+                      color={getProgressColor(progress)}
+                      sx={{ height: 6, borderRadius: 1 }}
+                    />
                     <Typography variant="caption" color="text.secondary">
                       {formatCurrency(goal.currentAmount)} / {formatCurrency(goal.targetAmount)}
                     </Typography>

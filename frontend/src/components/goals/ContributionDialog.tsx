@@ -1,5 +1,5 @@
+import { Alert, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Typography } from '@mui/material'
 import React, { useEffect, useState } from 'react'
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Alert, Typography, Box } from '@mui/material'
 import { AddContributionDto, Goal } from '../../types'
 
 interface ContributionDialogProps {

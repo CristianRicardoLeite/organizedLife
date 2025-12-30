@@ -1,4 +1,15 @@
-import { AccountCircle, AccountBalance, ChevronLeft, ChevronRight, Dashboard as DashboardIcon, Flag, Logout, Menu as MenuIcon, Receipt as ReceiptIcon } from '@mui/icons-material'
+import {
+  AccountBalance,
+  AccountCircle,
+  ChevronLeft,
+  ChevronRight,
+  Dashboard as DashboardIcon,
+  Flag,
+  Home as HomeIcon,
+  Logout,
+  Menu as MenuIcon,
+  Receipt as ReceiptIcon,
+} from '@mui/icons-material'
 import {
   AppBar,
   Avatar,
@@ -202,6 +213,9 @@ const AppLayout = ({ children }: AppLayoutProps) => {
           </Typography>
 
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <IconButton color="inherit" onClick={() => navigate('/')} title="Go to Home" sx={{ mr: 1 }}>
+              <HomeIcon />
+            </IconButton>
             <Typography variant="body2" sx={{ display: { xs: 'none', sm: 'block' }}}>
               {user?.name}
             </Typography>

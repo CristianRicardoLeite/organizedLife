@@ -1,6 +1,6 @@
-import React from 'react'
+import { Add as AddIcon, Delete as DeleteIcon, Edit as EditIcon } from '@mui/icons-material'
 import { Box, Card, CardContent, Chip, IconButton, LinearProgress, Typography } from '@mui/material'
-import { Delete as DeleteIcon, Edit as EditIcon, Add as AddIcon } from '@mui/icons-material'
+import React from 'react'
 import { Goal, GoalStatus } from '../../types'
 
 interface GoalCardProps {

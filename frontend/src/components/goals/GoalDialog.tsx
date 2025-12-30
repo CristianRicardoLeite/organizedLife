@@ -1,17 +1,5 @@
+import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material'
 import React, { useEffect, useState } from 'react'
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  TextField,
-  Alert,
-} from '@mui/material'
 import { CreateGoalDto, Goal, GoalType, UpdateGoalDto } from '../../types'
 
 interface GoalDialogProps {
