@@ -1,0 +1,63 @@
+services:
+  # Backend - .NET API
+  backend:
+    build:
+      context: ./backend/OrganizedLife.API
+      dockerfile: Dockerfile
+    container_name: organized-life-backend
+    ports:
+      - "${BACKEND_PORT:-5050}:5000"
+      - "${BACKEND_HTTPS_PORT:-5051}:5001"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT:-Production}
+      - ASPNETCORE_URLS=http://+:5000
+      - ConnectionStrings__DefaultConnection=Data Source=/app/data/organizedlife.db
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_ISSUER=${JWT_ISSUER:-OrganizedLife}
+      - JWT_AUDIENCE=${JWT_AUDIENCE:-OrganizedLifeUsers}
+    volumes:
+      - db-data:/app/data
+    networks:
+      - organized-life-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+
+  # Frontend - React + Nginx
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_BASE_URL=${VITE_API_BASE_URL:-http://localhost:5050/api}
+    container_name: organized-life-frontend
+    ports:
+      - "${FRONTEND_PORT:-3000}:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - organized-life-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+
+# Volumes persistentes
+volumes:
+  db-data:
+    driver: local
+    name: organized-life-db-data
+
+# Rede para comunicação entre containers
+networks:
+  organized-life-network:
+    driver: bridge
+    name: organized-life-network
