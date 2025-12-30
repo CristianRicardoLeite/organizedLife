@@ -8,6 +8,7 @@ import { Goals } from './pages/Goals'
 import Home from './pages/Home'
 import Login from './pages/Login'
 import Register from './pages/Register'
+import Reports from './pages/Reports'
 import Transactions from './pages/Transactions'
 
 const queryClient = new QueryClient()
@@ -52,6 +53,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Goals />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/reports"
+              element={
+                <ProtectedRoute>
+                  <Reports />
                 </ProtectedRoute>
               }
             />

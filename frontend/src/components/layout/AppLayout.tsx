@@ -1,6 +1,7 @@
 import {
   AccountBalance,
   AccountCircle,
+  Assessment,
   ChevronLeft,
   ChevronRight,
   Dashboard as DashboardIcon,
@@ -53,6 +54,7 @@ const navItems: NavItem[] = [
   { text: 'Transactions', icon: <ReceiptIcon />, path: '/transactions' },
   { text: 'Budget', icon: <AccountBalance />, path: '/budget' },
   { text: 'Goals', icon: <Flag />, path: '/goals' },
+  { text: 'Reports', icon: <Assessment />, path: '/reports' },
 ]
 
 const AppLayout = ({ children }: AppLayoutProps) => {
