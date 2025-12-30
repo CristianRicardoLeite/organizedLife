@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { BalanceTrendChart, ExpenseChart, IncomeExpenseChart } from '../components/charts'
 import { DraggableGrid } from '../components/common'
-import { StatCard } from '../components/dashboard'
+import { BudgetOverview, StatCard } from '../components/dashboard'
 import AppLayout from '../components/layout/AppLayout'
 import { useTransactions } from '../hooks/api'
 import { useAuth } from '../hooks/useAuth'
@@ -150,6 +150,11 @@ const Dashboard = () => {
               },
             ]}
           />
+        </Box>
+
+        {/* Budget Overview Section */}
+        <Box sx={{ mt: 4 }}>
+          <BudgetOverview />
         </Box>
 
         <Box sx={{ mt: 4 }}>

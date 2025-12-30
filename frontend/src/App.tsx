@@ -1,12 +1,13 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { Route, BrowserRouter as Router, Routes } from 'react-router-dom'
+import ProtectedRoute from './components/common/ProtectedRoute'
 import { AuthProvider } from './context/AuthContext'
+import Budget from './pages/Budget'
+import Dashboard from './pages/Dashboard'
 import Home from './pages/Home'
 import Login from './pages/Login'
 import Register from './pages/Register'
-import Dashboard from './pages/Dashboard'
 import Transactions from './pages/Transactions'
-import ProtectedRoute from './components/common/ProtectedRoute'
 
 const queryClient = new QueryClient()
 
@@ -34,6 +35,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Transactions />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/budget"
+              element={
+                <ProtectedRoute>
+                  <Budget />
                 </ProtectedRoute>
               }
             />

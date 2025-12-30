@@ -56,36 +56,38 @@ const Transactions = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredTransactions.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={4} align="center" sx={{ py: 8 }}>
-                    <Typography variant="body1" color="text.secondary">
+              {filteredTransactions.length === 0
+                ? (
+                  <TableRow>
+                    <TableCell colSpan={4} align="center" sx={{ py: 8 }}>
+                      <Typography variant="body1" color="text.secondary">
                       No transactions found. Click the + button to add your first transaction!
-                    </Typography>
-                  </TableCell>
-                </TableRow>
-              ) : (
-                filteredTransactions.map(transaction => (
-                  <TableRow
-                    key={transaction.id}
-                    sx={{
-                      '&:hover': { bgcolor: 'action.hover' },
-                      cursor: 'pointer',
-                    }}
-                  >
-                    <TableCell>{transaction.description}</TableCell>
-                    <TableCell>
-                      <Chip label={transaction.category} size="small" />
-                    </TableCell>
-                    <TableCell>{transaction.date}</TableCell>
-                    <TableCell align="right">
-                      <Typography fontWeight={600} color={transaction.type === 'income' ? 'success.main' : 'error.main'}>
-                        {transaction.type === 'income' ? '+' : '-'}${Math.abs(transaction.amount).toFixed(2)}
                       </Typography>
                     </TableCell>
                   </TableRow>
-                ))
-              )}
+                )
+                : (
+                  filteredTransactions.map(transaction => (
+                    <TableRow
+                      key={transaction.id}
+                      sx={{
+                        '&:hover': { bgcolor: 'action.hover' },
+                        cursor: 'pointer',
+                      }}
+                    >
+                      <TableCell>{transaction.description}</TableCell>
+                      <TableCell>
+                        <Chip label={transaction.category} size="small" />
+                      </TableCell>
+                      <TableCell>{transaction.date}</TableCell>
+                      <TableCell align="right">
+                        <Typography fontWeight={600} color={transaction.type === 'income' ? 'success.main' : 'error.main'}>
+                          {transaction.type === 'income' ? '+' : '-'}${Math.abs(transaction.amount).toFixed(2)}
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
             </TableBody>
           </Table>
         </TableContainer>
