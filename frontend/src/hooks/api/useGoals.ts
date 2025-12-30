@@ -150,10 +150,10 @@ export const useGoals = () => {
           prev.map(goal =>
             goal.id === data.id
               ? {
-                  ...goal,
-                  ...data,
-                  updatedAt: new Date().toISOString(),
-                }
+                ...goal,
+                ...data,
+                updatedAt: new Date().toISOString(),
+              }
               : goal,
           ),
         )
