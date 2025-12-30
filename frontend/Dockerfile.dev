@@ -1,0 +1,23 @@
+# Dockerfile for Development with Hot Reload
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Copiar package files
+COPY package*.json ./
+
+# Instalar dependências
+RUN npm ci
+
+# Copiar código fonte
+COPY . .
+
+# Expor porta do Vite
+EXPOSE 5173
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
+    CMD wget --quiet --tries=1 --spider http://localhost:5173/ || exit 1
+
+# Iniciar servidor de desenvolvimento com hot reload
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]

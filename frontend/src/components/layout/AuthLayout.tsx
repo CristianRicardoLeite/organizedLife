@@ -19,10 +19,18 @@ const AuthLayout = ({ children, title, subtitle }: AuthLayoutProps) => {
         alignItems: 'center',
         justifyContent: 'center',
         background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
-        py: 4,
+        px: 2,
       }}
     >
-      <Container maxWidth="sm">
+      <Container
+        maxWidth="sm"
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
         <Box sx={{ textAlign: 'center', mb: 3 }}>
           <Typography
             component={Link}
@@ -48,6 +56,8 @@ const AuthLayout = ({ children, title, subtitle }: AuthLayoutProps) => {
             p: 4,
             borderRadius: 3,
             backdropFilter: 'blur(10px)',
+            width: '100%',
+            maxWidth: 500,
           }}
         >
           <Box sx={{ mb: 3, textAlign: 'center' }}>
