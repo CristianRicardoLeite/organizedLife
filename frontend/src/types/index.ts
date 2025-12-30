@@ -121,3 +121,81 @@ export interface UpdateBudgetDto {
   id: number
   limit: number
 }
+
+// Goal Types
+export enum GoalType {
+  Savings = 'Savings',
+  DebtPayment = 'Debt Payment',
+  EmergencyFund = 'Emergency Fund',
+  Retirement = 'Retirement',
+  Investment = 'Investment',
+  Purchase = 'Purchase',
+  Other = 'Other',
+}
+
+export enum GoalStatus {
+  Active = 'Active',
+  Completed = 'Completed',
+  Paused = 'Paused',
+  Cancelled = 'Cancelled',
+}
+
+export interface Goal {
+  id: number
+  name: string
+  description?: string
+  type: GoalType
+  targetAmount: number
+  currentAmount: number
+  targetDate?: string
+  status: GoalStatus
+  icon?: string
+  color?: string
+  createdAt?: string
+  updatedAt?: string
+}
+
+export interface GoalContribution {
+  id: number
+  goalId: number
+  amount: number
+  date: string
+  note?: string
+  createdAt?: string
+}
+
+export interface GoalSummary {
+  totalGoals: number
+  activeGoals: number
+  completedGoals: number
+  totalTargetAmount: number
+  totalCurrentAmount: number
+  totalRemaining: number
+  overallProgress: number
+}
+
+export interface CreateGoalDto {
+  name: string
+  description?: string
+  type: GoalType
+  targetAmount: number
+  currentAmount?: number
+  targetDate?: string
+}
+
+export interface UpdateGoalDto {
+  id: number
+  name?: string
+  description?: string
+  type?: GoalType
+  targetAmount?: number
+  targetDate?: string
+  status?: GoalStatus
+}
+
+export interface AddContributionDto {
+  goalId: number
+  amount: number
+  date: string
+  note?: string
+}

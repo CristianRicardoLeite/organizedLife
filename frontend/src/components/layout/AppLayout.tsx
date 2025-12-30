@@ -1,4 +1,15 @@
-import { AccountCircle, AccountBalance, ChevronLeft, ChevronRight, Dashboard as DashboardIcon, Logout, Menu as MenuIcon, Receipt as ReceiptIcon } from '@mui/icons-material'
+import {
+  AccountBalance,
+  AccountCircle,
+  ChevronLeft,
+  ChevronRight,
+  Dashboard as DashboardIcon,
+  Flag,
+  Home as HomeIcon,
+  Logout,
+  Menu as MenuIcon,
+  Receipt as ReceiptIcon,
+} from '@mui/icons-material'
 import {
   AppBar,
   Avatar,
@@ -41,6 +52,7 @@ const navItems: NavItem[] = [
   { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
   { text: 'Transactions', icon: <ReceiptIcon />, path: '/transactions' },
   { text: 'Budget', icon: <AccountBalance />, path: '/budget' },
+  { text: 'Goals', icon: <Flag />, path: '/goals' },
 ]
 
 const AppLayout = ({ children }: AppLayoutProps) => {
@@ -192,7 +204,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
         }}
       >
         <Toolbar>
-          <IconButton color="inherit" aria-label="open drawer" edge="start" onClick={handleDrawerToggle} sx={{ mr: 2, display: { md: 'none' }}}>
+          <IconButton color="inherit" aria-label="open drawer" edge="start" onClick={handleDrawerToggle} sx={{ mr: 2, display: { md: 'none' } }}>
             <MenuIcon />
           </IconButton>
 
@@ -201,7 +213,10 @@ const AppLayout = ({ children }: AppLayoutProps) => {
           </Typography>
 
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Typography variant="body2" sx={{ display: { xs: 'none', sm: 'block' }}}>
+            <IconButton color="inherit" onClick={() => navigate('/')} title="Go to Home" sx={{ mr: 1 }}>
+              <HomeIcon />
+            </IconButton>
+            <Typography variant="body2" sx={{ display: { xs: 'none', sm: 'block' } }}>
               {user?.name}
             </Typography>
             <IconButton onClick={handleMenuOpen} sx={{ p: 0 }}>
@@ -239,7 +254,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
         </Toolbar>
       </AppBar>
 
-      <Box component="nav" sx={{ width: { md: drawerWidth }, flexShrink: { md: 0 }}}>
+      <Box component="nav" sx={{ width: { md: drawerWidth }, flexShrink: { md: 0 } }}>
         <Drawer
           variant="temporary"
           open={mobileOpen}

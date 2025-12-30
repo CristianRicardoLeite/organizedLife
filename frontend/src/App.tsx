@@ -4,6 +4,7 @@ import ProtectedRoute from './components/common/ProtectedRoute'
 import { AuthProvider } from './context/AuthContext'
 import Budget from './pages/Budget'
 import Dashboard from './pages/Dashboard'
+import { Goals } from './pages/Goals'
 import Home from './pages/Home'
 import Login from './pages/Login'
 import Register from './pages/Register'
@@ -43,6 +44,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Budget />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/goals"
+              element={
+                <ProtectedRoute>
+                  <Goals />
                 </ProtectedRoute>
               }
             />
