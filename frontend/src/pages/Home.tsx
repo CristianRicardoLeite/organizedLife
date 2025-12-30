@@ -1,13 +1,6 @@
-import { Link as RouterLink } from 'react-router-dom'
-import {
-  Container,
-  Box,
-  Typography,
-  Button,
-  Stack,
-  Paper,
-} from '@mui/material'
 import { Login as LoginIcon, PersonAdd as RegisterIcon } from '@mui/icons-material'
+import { Box, Button, Container, Paper, Stack, Typography } from '@mui/material'
+import { Link as RouterLink } from 'react-router-dom'
 
 const Home = () => (
   <Container maxWidth="sm">
@@ -41,40 +34,17 @@ const Home = () => (
           OrganizedLife
         </Typography>
 
-        <Typography
-          variant="h5"
-          color="text.secondary"
-          gutterBottom
-          sx={{ mb: 4 }}
-        >
-          Sistema de Organização Financeira
+        <Typography variant="h5" color="text.secondary" gutterBottom sx={{ mb: 4 }}>
+          Financial Organization System
         </Typography>
 
-        <Stack
-          direction="row"
-          spacing={2}
-          justifyContent="center"
-        >
-          <Button
-            component={RouterLink}
-            to="/login"
-            variant="contained"
-            size="large"
-            startIcon={<LoginIcon />}
-            sx={{ px: 4, py: 1.5 }}
-          >
-            Login
+        <Stack direction="row" spacing={2} justifyContent="center">
+          <Button component={RouterLink} to="/login" variant="contained" size="large" startIcon={<LoginIcon />} sx={{ px: 4, py: 1.5 }}>
+            Sign In
           </Button>
 
-          <Button
-            component={RouterLink}
-            to="/register"
-            variant="outlined"
-            size="large"
-            startIcon={<RegisterIcon />}
-            sx={{ px: 4, py: 1.5 }}
-          >
-            Cadastrar
+          <Button component={RouterLink} to="/register" variant="outlined" size="large" startIcon={<RegisterIcon />} sx={{ px: 4, py: 1.5 }}>
+            Sign Up
           </Button>
         </Stack>
       </Paper>
@@ -83,5 +53,3 @@ const Home = () => (
 )
 
 export default Home
-
-
